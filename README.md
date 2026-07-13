@@ -74,8 +74,8 @@ Documents (pt/en/es · PDFs, scans, mail)
 ## Roadmap
 
 - [x] **Phase 1 — Deadline Engine + PT pack**: 3 regimes, férias judiciais via Easter algorithm, 21 hand-verified cases, explanation traces
-- [ ] **Phase 1b — EU jurisdiction pack**: Regulation 1182/71 counting rules — proves the pack architecture with a second jurisdiction
-- [ ] **Phase 2 — Obligation Graph**: Pydantic schema (claims, obligations, states, evidence spans), append-only store
+- [x] **Phase 1b — EU jurisdiction pack**: Regulation 1182/71 counting rules (days · working days · weeks · months/years, art. 3(4) end-roll), EU-institution holidays via the Easter algorithm — 13 hand-verified cases; **the same engine now runs two jurisdictions with different roll rules (CC doesn't roll Saturdays; 1182/71 does)**
+- [x] **Phase 2 — Obligation Graph**: Pydantic schema (claims with source spans + per-tier provenance, obligations with enforced state machine), **append-only hash-chained event log** — tamper detection and full replay tested; Deadline Engine integrated
 - [ ] **Phase 3 — Perception, tiered**: VLM extraction (cloud + local Ollama path) vs classical heuristics — **per-field F1, per language, per tier, measured on a hand-built gold set**
 - [ ] **Phase 4 — Synthetic corpus + gold set**: pt/en notification & renewal documents with ground truth
 - [ ] **Phase 5 — Agent crew**: obligation agent → deadline proposal → drafting agent → red-team, human gate
