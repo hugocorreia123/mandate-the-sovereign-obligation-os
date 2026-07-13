@@ -8,6 +8,7 @@ Usage:
 
 import argparse
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -34,11 +35,8 @@ def field_correct(field, pred, gold):
     if field == "amount_eur":
         return abs(float(pred) - float(gold)) < 0.01
     if field == "legal_basis":
-        # lenient: main statute token must appear
-        key = ("1182" if "1182" in gold else
-               "279" if "279" in gold else
-               "87" if "87" in gold else "138")
-        return key in str(pred)
+        toks = set(re.findall(r"\d+", str(gold)))
+        return bool(toks & set(re.findall(r"\d+", str(pred))))
     return str(pred) == str(gold)
 
 

@@ -161,16 +161,29 @@ language: "pt" | "en"
 jurisdiction: "PT" | "EU"
 regime_id: "cpc_processual" | "cpa_uteis" | "cc_corridos" |
            "eu_1182_days" | "eu_1182_working_days"
-obligation_type: "respond" | "pay" | "renew" | "notify" | "file"
+obligation_type: the action the DEBTOR MUST PERFORM (not the document's
+  topic): "respond" = submit observations/contestation/defence to a
+  court or authority; "notify" = give notice or communicate something
+  within a period (a NON-renewal notice creates a NOTIFY obligation);
+  "renew" = actually renew/extend; "pay"; "file".
 event_date: ISO date the notice/citation was received or effected
             (NOT contract signature or proceedings-opened dates)
 deadline_amount: integer number of days in the stated period
 deadline_unit: "days"
-debtor: party who owes the action
-creditor: party owed / issuing authority or court
+debtor: the party who must perform that action. In a citation/notice
+  inviting a response, that is the ADDRESSEE. In a letter giving
+  notice under a notice-period clause, that is the SENDER giving the
+  notice. Example: in a "carta de oposição à renovação", the debtor is the
+  REMETENTE (sender) who must give the notice — not the addressee.
+creditor: the party to whom the obligation is owed. In a judicial
+  citation, the creditor is the OPPOSING PARTY (the Autor/claimant),
+  not the court. In an administrative notice, the issuing authority.
+  In a notice-period letter, the recipient of the notice.
 amount_eur: the MAIN amount at stake in EUR as a number
             (not fees/custas/taxa)
-legal_basis: short statute reference as stated
+legal_basis: the statute or regulation governing the PERIOD
+  COMPUTATION when one is stated (e.g. Reg. 1182/71, CPC art. 138.º,
+  CC art. 279.º) — not the contract clause creating the obligation.
 
 regime_id guide: "dias úteis"+CPA -> cpa_uteis; CPC/art.138/569 ->
 cpc_processual; Código Civil art.279 (dias corridos) -> cc_corridos;
