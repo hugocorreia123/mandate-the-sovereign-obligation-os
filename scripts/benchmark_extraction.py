@@ -13,6 +13,8 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, "core")
+from dotenv import load_dotenv  # noqa: E402
+load_dotenv()
 from extract import FIELDS, TIERS  # noqa: E402
 
 SCORED = [f for f in FIELDS]
