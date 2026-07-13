@@ -28,7 +28,7 @@ from typing import Callable, Literal, Optional
 
 from dateutil.relativedelta import relativedelta
 
-Unit = Literal["days", "months", "years"]
+Unit = Literal["days", "weeks", "months", "years"]
 
 
 @dataclass
@@ -88,6 +88,12 @@ def compute_deadline(pack: JurisdictionPack, regime_id: str,
     rule = pack.rules[regime_id]
     steps: list[str] = []
     refs = [rule.legal_basis]
+
+    if unit == "weeks":
+        steps.append(f"Period of {amount} week(s) converts to "
+                     f"{amount * 7} continuous days (ends on the same "
+                     f"weekday as the event) [weeks rule].")
+        amount, unit = amount * 7, "days"
 
     steps.append(f"Event date: {event_date.isoformat()} "
                  f"({event_date.strftime('%A')}).")
