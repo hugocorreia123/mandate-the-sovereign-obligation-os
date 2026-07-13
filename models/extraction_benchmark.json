@@ -1,0 +1,46 @@
+{
+  "tier0": {
+    "pt": {
+      "language": 0.0,
+      "jurisdiction": 0.0,
+      "regime_id": 0.0,
+      "obligation_type": 0.0,
+      "event_date": 0.0,
+      "deadline_amount": 0.0,
+      "deadline_unit": 0.0,
+      "debtor": 0.0,
+      "creditor": 0.0,
+      "amount_eur": 0.0,
+      "legal_basis": 0.0,
+      "_macro": 0.0
+    },
+    "en": {
+      "language": 0.0,
+      "jurisdiction": 0.0,
+      "regime_id": 0.0,
+      "obligation_type": 0.0,
+      "event_date": 0.0,
+      "deadline_amount": 0.0,
+      "deadline_unit": 0.0,
+      "debtor": 0.0,
+      "creditor": 0.0,
+      "amount_eur": 0.0,
+      "legal_basis": 0.0,
+      "_macro": 0.0
+    },
+    "all": {
+      "language": 0.0,
+      "jurisdiction": 0.0,
+      "regime_id": 0.0,
+      "obligation_type": 0.0,
+      "event_date": 0.0,
+      "deadline_amount": 0.0,
+      "deadline_unit": 0.0,
+      "debtor": 0.0,
+      "creditor": 0.0,
+      "amount_eur": 0.0,
+      "legal_basis": 0.0,
+      "_macro": 0.0
+    }
+  }
+}
