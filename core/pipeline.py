@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from engine import compute_deadline
+from redaction import detect_injection
 from extract import ExtractionResult, TIERS
 from graph import (Claim, ClaimType, Deadline, Obligation,
                    ObligationGraph, ObligationStatus, ObligationType,
@@ -76,6 +77,12 @@ def process_document(text: str, doc_id: str, graph: ObligationGraph,
                      red_team: Optional[Callable] = None
                      ) -> PipelineResult:
     trace = [f"[perceive] extracting with {tier}"]
+    injections = detect_injection(text)
+    if injections:
+        trace.append(
+            f"[security] {len(injections)} injection attempt(s) "
+            f"detected in the document — flagged for human review; "
+            f"the engine computes the deadline regardless")
     ex = TIERS[tier](text)
 
     missing = [f for f in REQUIRED if getattr(ex, f) is None]
@@ -124,13 +131,15 @@ def process_document(text: str, doc_id: str, graph: ObligationGraph,
     trace.append(f"[act] draft produced ({len(draft)} chars)")
 
     # ---- red team: deterministic checks + optional LLM critic ----
-    verdict = {"checks": [], "pass": True}
+    verdict = {"checks": [], "pass": True,
+               "injections": injections}
 
     def check(name, ok):
         verdict["checks"].append({"check": name, "pass": bool(ok)})
         if not ok:
             verdict["pass"] = False
 
+    check("no_injection_in_source", not injections)
     check("due_date_verbatim", r.due_date.isoformat() in draft)
     check("deadline_amount_stated",
           re.search(rf"\b{ex.deadline_amount}\b", draft) is not None)
