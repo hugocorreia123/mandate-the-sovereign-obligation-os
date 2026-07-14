@@ -24,9 +24,8 @@ obliged party, in the SAME LANGUAGE as the source document.
 
 Facts you MUST use exactly as given (they were computed
 deterministically; do not recalculate or reformat):
-- response DEADLINE (computed): {due}. State it in ONE clear
-  deadline sentence, e.g. "... até <prose date> ({due})." NEVER
-  place this ISO date next to the event/citation date.
+- due date: {due} (include this ISO date verbatim once, e.g.
+  "({due})", alongside any prose date)
 - period: {amount} {unit}
 - legal basis: {basis}
 - debtor (acting party): {debtor}
@@ -62,9 +61,15 @@ CRITIC_PROMPT = """You are a hostile legal reviewer. Attack this draft
 against the case record. Answer ONLY JSON:
 {{"pass": true/false, "issues": ["..."]}}
 
-Fail it if: the due date differs from {due}; the period differs from
-{amount} {unit}; the legal basis contradicts {basis}; parties are
-swapped; any amount is invented; the language differs from the source
+GROUND TRUTH: the due date {due} was computed by a deterministic
+legal deadline engine and is CORRECT BY DEFINITION. Do NOT
+recalculate or second-guess it. Fail the draft ONLY if the draft
+STATES a different due date than {due}.
+
+Also fail it if: the period stated differs from {amount} {unit}; the
+legal basis contradicts {basis}; parties are swapped; any amount is
+invented (number-format differences such as "347 213.65" vs
+"347,213.65" are NOT errors); the language differs from the source
 document's language.
 
 CASE RECORD: debtor={debtor} creditor={creditor} event={event}
@@ -82,10 +87,15 @@ def groq_red_team(draft, ex, deadline_result,
         amount=ex.deadline_amount, unit=ex.deadline_unit,
         basis=ex.legal_basis, debtor=ex.debtor, creditor=ex.creditor,
         event=ex.event_date, amount_eur=ex.amount_eur, draft=draft)
-    resp = _groq().chat.completions.create(
-        model=model, temperature=0, reasoning_format="hidden",
-        response_format={"type": "json_object"},
-        messages=[{"role": "user", "content": prompt}])
+    try:
+        resp = _groq().chat.completions.create(
+            model=model, temperature=0, reasoning_format="hidden",
+            response_format={"type": "json_object"},
+            messages=[{"role": "user", "content": prompt}])
+    except Exception:                       # json-mode validator can
+        resp = _groq().chat.completions.create(   # 400; retry plain
+            model=model, temperature=0, reasoning_format="hidden",
+            messages=[{"role": "user", "content": prompt}])
     m = re.search(r"\{.*\}", resp.choices[0].message.content,
                   re.DOTALL)
     try:

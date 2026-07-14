@@ -135,17 +135,19 @@ def process_document(text: str, doc_id: str, graph: ObligationGraph,
     check("deadline_amount_stated",
           re.search(rf"\b{ex.deadline_amount}\b", draft) is not None)
     if ex.amount_eur:
-        us = f"{ex.amount_eur:,.2f}"
-        pt = us.replace(",", "X").replace(".", ",").replace("X", ".")
         check("amount_present",
-              us in draft or pt in draft
+              f"{ex.amount_eur:,.2f}" in draft
               or f"{ex.amount_eur:.2f}" in draft)
     check("legal_basis_cited",
           any(tok in draft for tok in
               re.findall(r"\d+", ex.legal_basis or "")) if
           ex.legal_basis else True)
     if red_team is not None:
-        llm_verdict = red_team(draft, ex, r)
+        try:
+            llm_verdict = red_team(draft, ex, r)
+        except Exception as e:                      # LLM failure must
+            llm_verdict = {"pass": False,           # degrade, not crash
+                           "issues": [f"critic unavailable: {e}"]}
         verdict["llm_critic"] = llm_verdict
         check("llm_critic", llm_verdict.get("pass", False))
 
