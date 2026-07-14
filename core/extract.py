@@ -178,9 +178,12 @@ debtor: the party who must perform that action. In a citation/notice
 creditor: the party to whom the obligation is owed. In a judicial
   citation, the creditor is the OPPOSING PARTY (the Autor/claimant),
   not the court. In an administrative notice, the issuing authority.
-  In a notice-period letter, the recipient of the notice.
-amount_eur: the MAIN amount at stake in EUR as a number
-            (not fees/custas/taxa)
+  In a notice-period letter, the recipient of the notice. Both parties are always named in these documents — identify them
+  from who issued vs who received; do not use null for parties.
+amount_eur: the principal monetary amount stated (claim value, fine —
+  including "up to" amounts, administrative fee/taxa, rent, or
+  contract value) as a number. Exclude only secondary costs stated
+  alongside a larger principal (e.g. custas de citação).
 legal_basis: the statute or regulation governing the PERIOD
   COMPUTATION when one is stated (e.g. Reg. 1182/71, CPC art. 138.º,
   CC art. 279.º) — not the contract clause creating the obligation.

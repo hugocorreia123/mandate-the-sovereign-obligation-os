@@ -93,9 +93,21 @@ def main():
                     if g["doc_id"] in done and field_correct(
                         field, done[g["doc_id"]].get(field), g[field]))
                 per[lang][field] = round(n_ok / max(len(docs), 1), 3)
+            n_f = len(docs) * len(SCORED)
+            n_abst = sum(1 for g in docs if g["doc_id"] in done
+                         for f in SCORED
+                         if done[g["doc_id"]].get(f) is None)
+            n_wrong = sum(
+                1 for g in docs if g["doc_id"] in done
+                for f in SCORED
+                if done[g["doc_id"]].get(f) is not None
+                and not field_correct(f, done[g["doc_id"]].get(f),
+                                      g[f]))
+            per[lang]["_abstain_rate"] = round(n_abst / n_f, 3)
+            per[lang]["_wrong_rate"] = round(n_wrong / n_f, 3)
             per[lang]["_macro"] = round(
                 sum(per[lang][f] for f in SCORED) / len(SCORED), 3)
-        report[tier] = per
+                
 
         print(f"\n== {tier} ==  (n={len(done)}/{len(gold)})")
         print(f"{'field':<18}{'pt':>7}{'en':>7}{'all':>7}")
