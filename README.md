@@ -19,7 +19,7 @@ Every contract, court notification, regulation and SLA is a **machine that gener
 | **The ledger is tamper-evident by construction** | Every claim, computation, draft, and approval is an append-only, **SHA-256 hash-chained** event. Editing one byte anywhere breaks `verify_chain()` — tested with a forged-record case. Full event-sourced replay from the log |
 | **Multilingual, and honest about it per language** | pt-PT + English, measured *separately* — which is how the local model's language-asymmetric weaknesses (EN contract party-attribution) were caught. Two-axis design: language ≠ jurisdiction |
 
-![The Mandate demo — a Portuguese citação processed end-to-end: engine-computed deadline with its cited trace, an AI-drafted response, an all-green red-team panel, and the human approval gate](docs/demo_process.png)
+![The Mandate demo — an EU regulatory notice processed end-to-end: the engine-computed deadline under Reg. 1182/71 with its cited trace, an AI-drafted response embedding that date verbatim, an all-green red-team panel, and the human approval gate](docs/demo_process.png)
 
 ## The thesis
 
@@ -83,7 +83,7 @@ The headline finding: **the sovereign 7B tier trades completeness, not correctne
 
 **Phase 5 — the demo.** A Streamlit app: process a document on any tier, watch the engine's cited trace, read the draft and the red-team verdict, approve into the hash chain. A live **system-mode badge** shows which rungs are available (auto-detecting the Groq key and a local Ollama), and the Method tab publishes the honest benchmark.
 
-![The Method tab — the plain-language degradation ladder and the live per-field extraction benchmark](docs/demo_method.png)
+![The obligation ledger — obligations across PT and EU jurisdictions sorted by due date, the hash-chain integrity indicator, and the append-only event log showing per-tier extraction provenance](docs/demo_ledger.png)
 
 ## Demo
 
