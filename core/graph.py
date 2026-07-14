@@ -27,6 +27,8 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+from security import Action, Principal, authorize
+
 
 # ---------------------------------------------------------------- claims
 class SourceSpan(BaseModel):
@@ -212,8 +214,23 @@ class ObligationGraph:
              "deadline": deadline.model_dump(mode="json")})
 
     def transition(self, obligation_id: str, to: ObligationStatus,
-                   actor: str, note: str = "") -> None:
+                   actor: str, note: str = "",
+                   principal: Principal | None = None) -> None:
+        """Move an obligation through the workflow.
+
+        If `principal` is supplied, authorization is enforced: only an
+        APPROVE-capable role may reach SATISFIED, only VOID-capable may
+        void. Agents call without a principal (they are internal and
+        cannot reach SATISFIED anyway — the state machine forbids it
+        from any state a human has not first reviewed).
+        """
         o = self.obligations[obligation_id]
+        if principal is not None:
+            needed = {ObligationStatus.SATISFIED: Action.APPROVE,
+                      ObligationStatus.VOID: Action.VOID
+                      }.get(to, Action.TRANSITION)
+            authorize(principal, needed)
+            actor = principal.actor()
         if to not in ALLOWED_TRANSITIONS[o.status]:
             raise IllegalTransition(
                 f"{o.status.value} -> {to.value} is not allowed")
