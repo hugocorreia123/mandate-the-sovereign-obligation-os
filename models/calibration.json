@@ -1,89 +1,93 @@
 {
-  "prior": 0.8829,
+  "prior": 0.905,
   "support": {
     "amount_eur": {
-      "all_agree": 20
+      "abstained": 27,
+      "all_agree": 13
     },
     "creditor": {
-      "all_agree": 14,
+      "abstained": 5,
+      "all_agree": 27,
       "disagree": 4,
-      "majority": 2
+      "majority": 4
     },
     "deadline_amount": {
-      "all_agree": 20
+      "all_agree": 40
     },
     "deadline_unit": {
-      "all_agree": 20
+      "all_agree": 40
     },
     "debtor": {
-      "all_agree": 14,
+      "all_agree": 32,
       "disagree": 4,
-      "majority": 2
+      "majority": 4
     },
     "event_date": {
-      "all_agree": 19,
+      "all_agree": 39,
       "majority": 1
     },
     "jurisdiction": {
-      "all_agree": 20
+      "all_agree": 40
     },
     "language": {
-      "all_agree": 20
+      "all_agree": 40
     },
     "legal_basis": {
-      "disagree": 9,
-      "majority": 11
+      "disagree": 16,
+      "majority": 24
     },
     "obligation_type": {
-      "all_agree": 19,
+      "all_agree": 39,
       "majority": 1
     },
     "regime_id": {
-      "all_agree": 20
+      "all_agree": 40
     }
   },
   "table": {
     "amount_eur": {
-      "all_agree": 0.3636
+      "abstained": 0.0345,
+      "all_agree": 0.9333
     },
     "creditor": {
-      "all_agree": 0.75,
+      "abstained": 0.1429,
+      "all_agree": 0.9655,
       "disagree": 0.1667,
-      "majority": 0.75
+      "majority": 0.8333
     },
     "deadline_amount": {
-      "all_agree": 0.9545
+      "all_agree": 0.9762
     },
     "deadline_unit": {
-      "all_agree": 0.9545
+      "all_agree": 0.9762
     },
     "debtor": {
-      "all_agree": 0.9375,
+      "all_agree": 0.9706,
       "disagree": 0.1667,
-      "majority": 0.75
+      "majority": 0.8333
     },
     "event_date": {
-      "all_agree": 0.9524,
+      "all_agree": 0.9756,
       "majority": 0.3333
     },
     "jurisdiction": {
-      "all_agree": 0.9545
+      "all_agree": 0.9762
     },
     "language": {
-      "all_agree": 0.9545
+      "all_agree": 0.9762
     },
     "legal_basis": {
-      "disagree": 0.9091,
-      "majority": 0.9231
+      "disagree": 0.9444,
+      "majority": 0.9615
     },
     "obligation_type": {
-      "all_agree": 0.9524,
+      "all_agree": 0.9756,
       "majority": 0.6667
     },
     "regime_id": {
-      "all_agree": 0.9545
+      "all_agree": 0.9762
     }
   },
   "target_precision": 0.95,
-  "tau": 0.6667
+  "tau": 0.1667
 }

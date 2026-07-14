@@ -135,3 +135,30 @@ def test_roundtrip_save_load(tmp_path):
     assert c2.tau == c.tau
     assert c2.confidence("event_date", "all_agree") == \
         c.confidence("event_date", "all_agree")
+
+
+# --------------------------------------------- discrimination (AUC)
+def test_auc_of_a_constant_confidence_is_useless():
+    """The point of Phase 8: a constant can be well-calibrated at the
+    base rate yet separate nothing. AUC exposes that; ECE does not."""
+    from calibration import auc
+    pairs = [(0.9, True)] * 90 + [(0.9, False)] * 10
+    assert auc(pairs) == 0.5                    # no discrimination
+    assert expected_calibration_error(pairs) == 0.0   # yet "calibrated"
+
+
+def test_auc_rewards_a_signal_that_separates():
+    from calibration import auc
+    pairs = [(0.95, True)] * 50 + [(0.3, False)] * 50
+    assert auc(pairs) == 1.0
+
+
+def test_calibrated_signal_discriminates_better_than_constant():
+    from calibration import auc
+    recs = _records(300, seed=9)
+    cal, test = recs[:400], recs[400:]
+    c = Calibrator().fit(cal)
+    pairs = [(c.confidence(r["field"], r["signal"]), r["correct"])
+             for r in test]
+    assert auc(pairs) > 0.6
+    assert auc([(0.9, ok) for _, ok in pairs]) == 0.5

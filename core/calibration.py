@@ -170,3 +170,19 @@ def reliability_table(pairs: list[tuple[float, bool]], bins: int = 5
             "observed": round(sum(1 for _, ok in cell if ok)
                               / len(cell), 3)})
     return out
+
+
+def auc(pairs: list[tuple[float, bool]]) -> float:
+    """Probability a correct field scores above an incorrect one.
+
+    This is the metric ECE misses. A constant confidence is perfectly
+    *calibrated* at the base rate yet scores 0.5 here — it separates
+    nothing, so it cannot drive an abstention decision. Discrimination
+    is what makes a confidence actionable.
+    """
+    pos = [s for s, ok in pairs if ok]
+    neg = [s for s, ok in pairs if not ok]
+    if not pos or not neg:
+        return 0.5
+    wins = sum((p > n) + 0.5 * (p == n) for p in pos for n in neg)
+    return round(wins / (len(pos) * len(neg)), 4)
