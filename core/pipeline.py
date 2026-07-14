@@ -22,6 +22,7 @@ from datetime import date
 from pathlib import Path
 from typing import Callable, Optional
 
+from calibration import Calibrator, agreement_signal
 from engine import compute_deadline
 from redaction import detect_injection
 from extract import ExtractionResult, TIERS
@@ -32,6 +33,17 @@ from pack_eu import EU
 from pack_pt import PT
 
 PACKS = {"PT": PT, "EU": EU}
+
+_CAL_PATH = Path("models/calibration.json")
+
+
+def _calibrator() -> Optional[Calibrator]:
+    """Calibrated confidence if Phase 8 has been run, else None —
+    in which case claims carry no confidence rather than a fake one."""
+    try:
+        return Calibrator.load(_CAL_PATH)
+    except Exception:
+        return None
 
 REQUIRED = ("jurisdiction", "regime_id", "obligation_type",
             "event_date", "deadline_amount", "deadline_unit",
@@ -48,7 +60,14 @@ class PipelineResult:
 
 
 def _claims_from_extraction(ex: ExtractionResult, doc_id: str,
-                            tier: str) -> list[Claim]:
+                            tier: str,
+                            signals: Optional[dict] = None
+                            ) -> list[Claim]:
+    """Build claims. Confidence is MEASURED (Phase 8 calibration) when
+    a calibrator exists and a corroborating tier ran; otherwise the
+    field-level agreement is unknown and we do not invent a number."""
+    cal = _calibrator()
+    signals = signals or {}
     claims = []
     for field in ("obligation_type", "event_date", "deadline_amount",
                   "debtor", "creditor", "amount_eur", "legal_basis",
@@ -63,8 +82,11 @@ def _claims_from_extraction(ex: ExtractionResult, doc_id: str,
                  "legal_basis": ClaimType.LEGAL_BASIS,
                  "jurisdiction": ClaimType.JURISDICTION,
                  }.get(field, ClaimType.OBLIGATION_TRIGGER)
+        sig = signals.get(field, "single_source")
+        conf = (cal.confidence(field, sig) if cal
+                else 0.5)          # unknown, not "0.9"
         claims.append(Claim(
-            type=ctype, value={field: val}, confidence=0.9,
+            type=ctype, value={field: val}, confidence=round(conf, 4),
             language=ex.language or "pt",
             source=SourceSpan(doc_id=doc_id, excerpt=field),
             extracted_by=tier))
@@ -92,8 +114,22 @@ def process_document(text: str, doc_id: str, graph: ObligationGraph,
                               None, trace)
 
     # ---- compile: claims + obligation ----
+    # Corroboration: tier2 is deterministic, offline and free, so it
+    # can always second-opinion whichever tier ran. Agreement is the
+    # conformity signal behind calibrated confidence (Phase 8).
+    signals: dict[str, str] = {}
+    if tier != "tier2":
+        try:
+            second = TIERS["tier2"](text)
+            for f in ex.model_fields:
+                signals[f] = agreement_signal(
+                    {tier: getattr(ex, f), "tier2": getattr(second, f)})
+        except Exception:
+            signals = {}
+
     claims = [graph.add_claim(c, actor=f"agent:extractor/{tier}")
-              for c in _claims_from_extraction(ex, doc_id, tier)]
+              for c in _claims_from_extraction(ex, doc_id, tier,
+                                               signals)]
     obligation = graph.create_obligation(Obligation(
         type=ObligationType(ex.obligation_type),
         description=f"{ex.obligation_type} — {doc_id}",

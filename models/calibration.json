@@ -1,0 +1,89 @@
+{
+  "prior": 0.8829,
+  "support": {
+    "amount_eur": {
+      "all_agree": 20
+    },
+    "creditor": {
+      "all_agree": 14,
+      "disagree": 4,
+      "majority": 2
+    },
+    "deadline_amount": {
+      "all_agree": 20
+    },
+    "deadline_unit": {
+      "all_agree": 20
+    },
+    "debtor": {
+      "all_agree": 14,
+      "disagree": 4,
+      "majority": 2
+    },
+    "event_date": {
+      "all_agree": 19,
+      "majority": 1
+    },
+    "jurisdiction": {
+      "all_agree": 20
+    },
+    "language": {
+      "all_agree": 20
+    },
+    "legal_basis": {
+      "disagree": 9,
+      "majority": 11
+    },
+    "obligation_type": {
+      "all_agree": 19,
+      "majority": 1
+    },
+    "regime_id": {
+      "all_agree": 20
+    }
+  },
+  "table": {
+    "amount_eur": {
+      "all_agree": 0.3636
+    },
+    "creditor": {
+      "all_agree": 0.75,
+      "disagree": 0.1667,
+      "majority": 0.75
+    },
+    "deadline_amount": {
+      "all_agree": 0.9545
+    },
+    "deadline_unit": {
+      "all_agree": 0.9545
+    },
+    "debtor": {
+      "all_agree": 0.9375,
+      "disagree": 0.1667,
+      "majority": 0.75
+    },
+    "event_date": {
+      "all_agree": 0.9524,
+      "majority": 0.3333
+    },
+    "jurisdiction": {
+      "all_agree": 0.9545
+    },
+    "language": {
+      "all_agree": 0.9545
+    },
+    "legal_basis": {
+      "disagree": 0.9091,
+      "majority": 0.9231
+    },
+    "obligation_type": {
+      "all_agree": 0.9524,
+      "majority": 0.6667
+    },
+    "regime_id": {
+      "all_agree": 0.9545
+    }
+  },
+  "target_precision": 0.95,
+  "tau": 0.6667
+}
