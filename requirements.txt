@@ -1,0 +1,6 @@
+streamlit
+pydantic
+python-dateutil
+holidays
+groq
+python-dotenv
