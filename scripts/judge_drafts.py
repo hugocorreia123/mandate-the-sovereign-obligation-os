@@ -41,11 +41,19 @@ DRAFTS = Path("runs/drafts.jsonl")
 JUDGE = Path("runs/judgements.jsonl")
 
 JUDGE_PROMPT = """You are auditing a legal draft for GROUNDEDNESS: is
-every factual claim in the draft supported by the case record below?
+every factual claim in the draft supported by THE SOURCE DOCUMENT or
+the computed record below?
 
-You are NOT asked whether the deadline is legally correct — it was
-computed by a deterministic engine and is correct by definition. You
-are asked whether the DRAFT FAITHFULLY REPRESENTS the record.
+Two things you are NOT asked:
+  * whether the deadline is legally correct — it was computed by a
+    deterministic engine and is correct by definition;
+  * whether a detail is absent from the extracted record — the record
+    is an 11-field SUMMARY, not the evidence. A draft may legitimately
+    cite anything in the SOURCE DOCUMENT: the case number, the court,
+    the contract date, the reference number. Those are NOT inventions.
+
+An invention is a claim supported by NEITHER the source document NOR
+the computed record.
 
 Return ONLY JSON:
 {{"verdict": "GROUNDED" | "PARTIALLY_GROUNDED" | "UNGROUNDED",
@@ -62,8 +70,12 @@ issue types to use: wrong_date, wrong_amount, parties_swapped,
 invented_fact, wrong_legal_basis, misleading_phrasing,
 wrong_language, missing_review_stamp, other
 
-CASE RECORD
------------
+SOURCE DOCUMENT (the ground truth for every factual claim)
+---------------------------------------------------------
+{source}
+
+COMPUTED RECORD (a summary — absence here is NOT evidence of invention)
+-----------------------------------------------------------------------
 document language : {language}
 jurisdiction      : {jurisdiction}
 debtor (acts)     : {debtor}
@@ -89,6 +101,7 @@ def _groq():
 def judge_draft(rec: dict, model: str = "openai/gpt-oss-120b") -> dict:
     ex = rec["extraction"]
     prompt = JUDGE_PROMPT.format(
+        source=rec.get("source_text", "(source unavailable)")[:3000],
         language=ex.get("language"), jurisdiction=ex.get("jurisdiction"),
         debtor=ex.get("debtor"), creditor=ex.get("creditor"),
         amount=ex.get("amount_eur"), event_date=ex.get("event_date"),
@@ -168,6 +181,7 @@ def main():
                 rec = {"doc_id": g["doc_id"],
                        "doc_type": g["doc_type"],
                        "language": g["language"],
+                       "source_text": text,
                        "extraction": ex.model_dump(),
                        "due_date": r.due_date.isoformat(),
                        "trace": r.steps, "draft": draft}

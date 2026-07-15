@@ -53,7 +53,13 @@ def show(rec):
     print(f"DOCUMENT {rec['doc_id']}  ({rec['doc_type']} · "
           f"{rec['language']})")
     print("-" * 72)
-    print("CASE RECORD")
+    src = rec.get("source_text")
+    if src:
+        print("SOURCE DOCUMENT (ground truth — a draft may cite "
+              "anything here)")
+        print(src.strip()[:1400])
+        print("-" * 72)
+    print("COMPUTED RECORD (a summary — absence here is NOT invention)")
     print(f"  debtor (acts) : {ex.get('debtor')}")
     print(f"  creditor      : {ex.get('creditor')}")
     print(f"  amount        : {ex.get('amount_eur')}")

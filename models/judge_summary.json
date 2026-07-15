@@ -1,15 +1,14 @@
 {
-  "n": 23,
+  "n": 22,
   "verdicts": {
-    "PARTIALLY_GROUNDED": 19,
-    "GROUNDED": 4
+    "PARTIALLY_GROUNDED": 11,
+    "GROUNDED": 11
   },
-  "mean_groundedness": 0.587,
+  "mean_groundedness": 0.75,
   "issues": {
-    "invented_fact": 14,
-    "other": 2,
-    "wrong_legal_basis": 4,
     "missing_review_stamp": 2,
-    "misleading_phrasing": 1
+    "wrong_legal_basis": 1,
+    "invented_fact": 7,
+    "wrong_date": 1
   }
 }

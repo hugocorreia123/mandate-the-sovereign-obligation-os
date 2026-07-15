@@ -1,23 +1,22 @@
-{"doc_id": "pt_cit_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Reference to a supply contract dated 6 March 2025 is not supported by the case record"}]}
-{"doc_id": "en_reg_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "other", "detail": "Reference number CASE-2026-984 is not present in the case record"}]}
-{"doc_id": "en_ren_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft states the Master Services Agreement was executed on 16 January 2024, which is not present in the case record."}]}
-{"doc_id": "pt_cpa_000", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_ren_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Reference to contract dated 11\u202fde\u202fsetembro\u202fde\u202f2025 and clause fourth not present in the case record"}, {"type": "invented_fact", "detail": "Statement that the monthly rent is \u20ac\u202f3.327,15, while the record only lists an amount at stake of 3327.15 without specifying it as rent"}]}
-{"doc_id": "pt_cit_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Draft cites process number 9028/25.3T8LSB and Tribunal Judicial da Comarca do Porto, which are not present in the provided case record."}]}
-{"doc_id": "en_reg_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft states that the proceedings were opened on 10 May 2026, which is not present in the provided case record."}]}
-{"doc_id": "en_ren_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "wrong_legal_basis", "detail": "Draft cites Regulation (EEC, Euratom) No 1182/71 as the basis for the 90\u2011day calculation, which is not present in the case record."}]}
-{"doc_id": "pt_cpa_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "missing_review_stamp", "detail": "The draft states it lacks lawyer review, a fact not present in the case record."}]}
-{"doc_id": "pt_ren_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft states the lease was celebrated on 26 de janeiro de 2024, which is not present in the case record."}]}
-{"doc_id": "pt_cit_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Draft references a supply contract dated 29 de junho de 2024, which is not present in the case record."}]}
-{"doc_id": "en_reg_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Reference number CASE-2025-385 is not present in the provided case record."}]}
-{"doc_id": "en_ren_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Master Services Agreement execution date 12 March 2025 is not supported by the record"}, {"type": "wrong_legal_basis", "detail": "Computation of deadline is attributed to Regulation (EEC, Euratom) No 1182/71, which is not mentioned in the record"}]}
-{"doc_id": "pt_cpa_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft specifies an office number \"OF-2025/79104\" which is not present in the case record."}]}
-{"doc_id": "pt_ren_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Draft mentions opposition to renewal of a lease contract dated 11 May 2023, which is not present in the case record."}]}
-{"doc_id": "pt_cit_003", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft cites a judicial process number (6301/24.8T8LSB) that is not present in the provided case record."}]}
-{"doc_id": "en_reg_003", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_ren_003", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "wrong_legal_basis", "detail": "Draft cites Regulation (EEC, Euratom) No 1182/71 as the basis for computing the deadline, which is not present in the case record."}]}
-{"doc_id": "pt_cpa_003", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_cit_004", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft cites a supply contract dated 26 de julho de 2025, which is not mentioned in the case record."}]}
+{"doc_id": "pt_cit_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "missing_review_stamp", "detail": "The draft states \"MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO\", but the source document does not contain any information about a lawyer's review stamp."}]}
+{"doc_id": "en_reg_000", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_ren_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "wrong_legal_basis", "detail": "Draft claims an \"obligation to renew the Agreement\" per clause 11.2, but the source document is a non\u2011renewal notice indicating Baltic Freight intends NOT to renew."}]}
+{"doc_id": "pt_ren_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Statement that the draft lacks lawyer review is not supported by the source document or the computed record"}]}
+{"doc_id": "pt_cit_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft states 'MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO', which is not supported by the source document or the computed record."}]}
+{"doc_id": "en_reg_001", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_ren_001", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_cpa_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The claim that the draft lacks lawyer review is not supported by the source document or the computed record"}]}
+{"doc_id": "pt_ren_001", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_cit_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft includes the statement \"MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO\", which is not mentioned in the source document."}]}
+{"doc_id": "en_reg_002", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_ren_002", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_cpa_002", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_ren_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft states \"MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO\", a claim about the document's review status that is not supported by the source document or the computed record."}]}
+{"doc_id": "pt_cit_003", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_reg_003", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "wrong_date", "detail": "The draft states the Notice of Preliminary Findings is dated 15 February 2026, but the source document only indicates that the notice was deemed received on that date; the actual date of the notice is not provided."}]}
+{"doc_id": "en_ren_003", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_cpa_003", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The statement \"MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO\" is not supported by either the source document or the computed record."}]}
+{"doc_id": "pt_ren_003", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "missing_review_stamp", "detail": "Draft states it lacks lawyer review (\"MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO\"), but the source document and computed record contain no information about any review stamp."}]}
 {"doc_id": "en_reg_004", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_ren_004", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "wrong_legal_basis", "detail": "Draft cites Regulation (EEC, Euratom) No 1182/71 as the basis for the deadline, which is not mentioned in the case record."}, {"type": "misleading_phrasing", "detail": "Draft states the deadline is 90 days from the notice, but the record specifies a 60\u2011day period; the date given (2026\u201111\u201109) corresponds to 60 days, creating a contradictory claim."}]}
-{"doc_id": "pt_cpa_004", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "missing_review_stamp", "detail": "Draft states it lacks lawyer review, which is not mentioned in the case record."}, {"type": "other", "detail": "The draft includes an office number (OF-2024/60470) that is not present in the case record."}]}
+{"doc_id": "en_ren_004", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft\u2019s header date (2026-09-15) is not present in the source document or the computed record."}]}
+{"doc_id": "pt_cpa_004", "verdict": "GROUNDED", "issues": []}
