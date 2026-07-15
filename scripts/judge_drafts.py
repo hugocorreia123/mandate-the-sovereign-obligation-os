@@ -55,13 +55,6 @@ Two things you are NOT asked:
 An invention is a claim supported by NEITHER the source document NOR
 the computed record.
 
-NOT inventions (do not flag these):
-  * the mandatory review stamp ("MINUTA — CARECE DE REVISÃO POR
-    ADVOGADO" / "DRAFT — PENDING LEGAL REVIEW") — it is required by
-    policy and is meant to be absent from the source;
-  * standard salutations, addresses, signature placeholders;
-  * restating the computed deadline.
-
 Return ONLY JSON:
 {{"verdict": "GROUNDED" | "PARTIALLY_GROUNDED" | "UNGROUNDED",
   "issues": [{{"type": "...", "detail": "..."}}]}}
@@ -107,6 +100,14 @@ def _groq():
 
 def judge_draft(rec: dict, model: str = "openai/gpt-oss-120b") -> dict:
     ex = rec["extraction"]
+    # Never ask the judge to grade an empty draft: it will answer
+    # GROUNDED (no false claims are present) and inflate the metric.
+    if len((rec.get("draft") or "").strip()) < 80:
+        return {"verdict": "UNGROUNDED",
+                "issues": [{"type": "empty_draft",
+                            "detail": "the drafter produced no draft; "
+                                      "graded UNGROUNDED by the "
+                                      "harness, not by the judge"}]}
     prompt = JUDGE_PROMPT.format(
         source=rec.get("source_text", "(source unavailable)")[:3000],
         language=ex.get("language"), jurisdiction=ex.get("jurisdiction"),
@@ -188,6 +189,11 @@ def main():
                         draft = groq_drafter(text, ex, r)
                         break
                     except Exception as e:
+                        if "tokens per day" in str(e) or "TPD" in str(e):
+                            print(f"  {g['doc_id']} DAILY QUOTA "
+                                  f"EXHAUSTED — stopping. The cache "
+                                  f"resumes; rerun after reset.")
+                            raise SystemExit(1)
                         if "rate_limit" in str(e) and attempt < 3:
                             wait = args.pace * (2 ** attempt) + 4
                             print(f"  {g['doc_id']} rate-limited, "
@@ -228,6 +234,16 @@ def main():
                     v = judge_draft(rec)
                     break
                 except Exception as e:
+                    if "tokens per day" in str(e) or "TPD" in str(e):
+                        print(f"\n!! DAILY TOKEN QUOTA EXHAUSTED on "
+                              f"the judge model. {len(judged)} of "
+                              f"{len(done)} drafts judged so far.")
+                        print("   The cache resumes — rerun "
+                              "'--judge-only' after the daily reset.")
+                        print("   (The deterministic checks in "
+                              "scripts/verify_drafts.py need no "
+                              "quota at all.)")
+                        raise SystemExit(1)
                     if "rate_limit" in str(e) and attempt < 3:
                         wait = args.pace * (2 ** attempt) + 4
                         print(f"  {did} rate-limited, waiting "
@@ -269,6 +285,11 @@ def main():
         print("\n  issue taxonomy (HOW drafts fail):")
         for t, c in issues.most_common():
             print(f"    {t:<24}{c:>4}")
+    if len(judged) < 0.8 * len(picked):
+        print(f"\n(not writing models/judge_summary.json: only "
+              f"{len(judged)}/{len(picked)} judged — a partial run is "
+              f"not a measurement)")
+        return
     Path("models").mkdir(exist_ok=True)
     Path("models/judge_summary.json").write_text(json.dumps(
         {"n": len(judged), "verdicts": dict(verdicts),

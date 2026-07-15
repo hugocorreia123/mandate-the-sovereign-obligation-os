@@ -70,6 +70,36 @@ def _prose_patterns(d: date) -> list[re.Pattern]:
     ]
 
 
+_NUM_WORDS_PT = (r"(um|dois|duas|tr[êe]s|quatro|cinco|seis|sete|oito|"
+                 r"nove|dez|onze|doze|treze|catorze|quinze|dezasseis|"
+                 r"dezassete|dezoito|dezanove|vinte|trinta|quarenta|"
+                 r"cinquenta|sessenta|setenta|oitenta|noventa|cem|"
+                 r"cento|duzentos|trezentos|quatrocentos|quinhentos|"
+                 r"seiscentos|setecentos|oitocentos|novecentos|mil|"
+                 r"milh[õo]es?)")
+_NUM_WORDS_EN = (r"(one|two|three|four|five|six|seven|eight|nine|ten|"
+                 r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|"
+                 r"seventeen|eighteen|nineteen|twenty|thirty|forty|"
+                 r"fifty|sixty|seventy|eighty|ninety|hundred|thousand|"
+                 r"million)")
+_WORDS_MONEY = re.compile(
+    rf"\b{_NUM_WORDS_PT}\b[^.;]{{0,80}}?\b(euros?|c[êe]ntimos)\b"
+    rf"|\b{_NUM_WORDS_EN}\b[^.;]{{0,80}}?\b(euros?|cents?)\b",
+    re.I)
+
+
+def _no_amount_in_words(draft: str) -> bool:
+    """Amounts must appear in digits, never spelled out.
+
+    Found by the judge once it could see the source (Phase 9): a draft
+    wrote "duzentos e dez euros e 68 cêntimos" for 2.100,68 EUR — a
+    ten-fold error. The digit form was correct, so the amount_present
+    check passed it. Spelling money out adds a second, unverified
+    representation of a number that must be exact; forbid it.
+    """
+    return _WORDS_MONEY.search(draft) is None
+
+
 def _date_juxtaposition_ok(draft: str, event: date, due: date) -> bool:
     """The computed deadline must never sit ADJACENT to the event date.
 
@@ -227,6 +257,9 @@ def process_document(text: str, doc_id: str, graph: ObligationGraph,
 
     check("no_injection_in_source", not injections)
     check("due_date_verbatim", r.due_date.isoformat() in draft)
+    # a draft that says nothing cannot be wrong — and must not pass
+    check("draft_not_empty", len(draft.strip()) >= 80)
+    check("no_amount_in_words", _no_amount_in_words(draft))
     check("no_date_juxtaposition",
           _date_juxtaposition_ok(draft, date.fromisoformat(
               ex.event_date), r.due_date))

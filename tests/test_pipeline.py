@@ -73,3 +73,34 @@ def test_every_corpus_doc_flows_deterministically(tmp_path):
         assert res.status == "awaiting_approval", d.doc_id
     assert len(g.obligations) == len(docs)
     assert g.verify_chain() is True
+
+
+# ------------------------------- the empty-draft hole (Phase 9e)
+def empty_drafter(text, ex, r):
+    return ""
+
+
+def whitespace_drafter(text, ex, r):
+    return "   \n\n  "
+
+
+def test_an_empty_draft_never_reaches_the_human_gate(tmp_path):
+    """The judge scores an empty draft GROUNDED — it contains no false
+    claims — which is how groundedness peaked at 0.938 on a batch with
+    4 empty drafts. Silence must fail, mechanically."""
+    docs = generate_corpus(tmp_path / "c", n_per_type=1, seed=42)
+    g = ObligationGraph(tmp_path / "log.jsonl")
+    res = process_document(docs[0].text, docs[0].doc_id, g,
+                           tier="tier2", drafter=empty_drafter)
+    assert res.status != "awaiting_approval"
+    failed = [c["check"] for c in res.red_team_verdict["checks"]
+              if not c["pass"]]
+    assert "draft_not_empty" in failed
+
+
+def test_whitespace_is_not_a_draft(tmp_path):
+    docs = generate_corpus(tmp_path / "c", n_per_type=1, seed=42)
+    g = ObligationGraph(tmp_path / "log.jsonl")
+    res = process_document(docs[0].text, docs[0].doc_id, g,
+                           tier="tier2", drafter=whitespace_drafter)
+    assert res.status != "awaiting_approval"

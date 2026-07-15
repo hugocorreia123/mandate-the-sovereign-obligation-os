@@ -2,23 +2,5 @@
 {"doc_id": "en_reg_000", "verdict": "GROUNDED", "issues": []}
 {"doc_id": "en_ren_000", "verdict": "GROUNDED", "issues": []}
 {"doc_id": "pt_cpa_000", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_ren_000", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_cit_001", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_reg_001", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_ren_001", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_cpa_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "wrong_amount", "detail": "The amount in words is stated as \"duzentos e dez euros e 68 c\u00eantimos\" (210.68\u202f\u20ac), which contradicts the source document amount of \u20ac\u202f2.100,68."}]}
-{"doc_id": "pt_ren_001", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_cit_002", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_reg_002", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_ren_002", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_cpa_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "wrong_amount", "detail": "Draft states there is no amount due, but the source document specifies a procedural fee of \u20ac488,23."}]}
-{"doc_id": "pt_ren_002", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_cit_003", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_reg_003", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_ren_003", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_cpa_003", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_ren_003", "verdict": "UNGROUNDED", "issues": [{"type": "wrong_legal_basis", "detail": "Claim that opposition to renewal results in automatic termination of the contract is not stated in the source document."}, {"type": "invented_fact", "detail": "Statement that the monthly rent of \u20ac3.147,73 remains applicable until the deadline is not supported by the source or computed record."}]}
-{"doc_id": "pt_cit_004", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_reg_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "misleading_phrasing", "detail": "The draft states the administrative fine is \"EUR 64671.1\" whereas the source document specifies the fine is \"up to EUR 64,671.10\". Omitting the \"up to\" qualifier may mislead about the exact amount."}]}
 {"doc_id": "en_reg_004", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_ren_004", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Draft date of the acknowledgment letter (2026-09-10) is not supported by the source document or the computed record."}]}
-{"doc_id": "pt_cpa_004", "verdict": "GROUNDED", "issues": []}
