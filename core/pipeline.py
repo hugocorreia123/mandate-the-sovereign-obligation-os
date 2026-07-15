@@ -45,6 +45,56 @@ def _calibrator() -> Optional[Calibrator]:
     except Exception:
         return None
 
+_PT_MONTHS = ["janeiro", "fevereiro", "março", "abril", "maio",
+              "junho", "julho", "agosto", "setembro", "outubro",
+              "novembro", "dezembro"]
+_EN_MONTHS = ["January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November",
+              "December"]
+
+
+def _prose_patterns(d: date) -> list[re.Pattern]:
+    """How a date may legitimately appear in a pt/en legal draft.
+
+    Word-anchored: "8 de maio de 2026" must NOT match inside
+    "18 de maio de 2026" — a substring check silently confuses the
+    service date with the deadline, which is exactly the error this
+    module exists to catch.
+    """
+    day, y = d.day, d.year
+    pt, en = _PT_MONTHS[d.month - 1], _EN_MONTHS[d.month - 1]
+    return [
+        re.compile(rf"(?<!\d){day}\s+de\s+{pt}\s+de\s+{y}\b"),
+        re.compile(rf"(?<!\d)0?{day}\s+{en}\s+{y}\b", re.I),
+        re.compile(rf"(?<!\d){re.escape(d.isoformat())}(?!\d)"),
+    ]
+
+
+def _date_juxtaposition_ok(draft: str, event: date, due: date) -> bool:
+    """The computed deadline must never sit ADJACENT to the event date.
+
+    Found by blind human labelling (Phase 9): 3 of 22 drafts wrote
+    "citação de 9 de outubro de 2026 (2026-11-09)" — gluing the
+    deadline onto the service date, so the document reads as though it
+    was served on the deadline. Materially misleading in a legal
+    filing; the LLM critic waved all three through. A mechanical
+    property deserves a mechanical check.
+
+    Adjacency is the signal, not proximity: a correct draft may name
+    both dates in one sentence ("served on 8 May (2026-05-08); the
+    period ends 18 May (2026-05-18)"). Only a deadline glued directly
+    onto the event date is an error.
+    """
+    iso = re.escape(due.isoformat())
+    for pat in _prose_patterns(event):
+        # event date, then at most a few separators, then the DUE iso
+        glued = re.compile(pat.pattern + r"[\s\(\[,–—-]{0,4}" + iso,
+                           pat.flags)
+        if glued.search(draft):
+            return False
+    return True
+
+
 REQUIRED = ("jurisdiction", "regime_id", "obligation_type",
             "event_date", "deadline_amount", "deadline_unit",
             "debtor", "creditor")
@@ -177,6 +227,9 @@ def process_document(text: str, doc_id: str, graph: ObligationGraph,
 
     check("no_injection_in_source", not injections)
     check("due_date_verbatim", r.due_date.isoformat() in draft)
+    check("no_date_juxtaposition",
+          _date_juxtaposition_ok(draft, date.fromisoformat(
+              ex.event_date), r.due_date))
     check("deadline_amount_stated",
           re.search(rf"\b{ex.deadline_amount}\b", draft) is not None)
     if ex.amount_eur:

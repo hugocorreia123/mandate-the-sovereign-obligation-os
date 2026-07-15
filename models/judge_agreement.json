@@ -1,0 +1,38 @@
+{
+  "n": 22,
+  "cohens_kappa": 0.6154,
+  "raw_agreement": 0.7727,
+  "confusion": {
+    "UNGROUNDED": {
+      "UNGROUNDED": 0,
+      "PARTIALLY_GROUNDED": 4,
+      "GROUNDED": 0
+    },
+    "PARTIALLY_GROUNDED": {
+      "UNGROUNDED": 0,
+      "PARTIALLY_GROUNDED": 9,
+      "GROUNDED": 0
+    },
+    "GROUNDED": {
+      "UNGROUNDED": 0,
+      "PARTIALLY_GROUNDED": 1,
+      "GROUNDED": 8
+    }
+  },
+  "human_marginals": {
+    "GROUNDED": 9,
+    "PARTIALLY_GROUNDED": 9,
+    "UNGROUNDED": 4
+  },
+  "judge_marginals": {
+    "GROUNDED": 8,
+    "PARTIALLY_GROUNDED": 14
+  },
+  "strictness": {
+    "mean_shift": 0.136,
+    "reading": "no systematic strictness bias",
+    "stricter_n": 1,
+    "lenient_n": 4,
+    "same_n": 17
+  }
+}

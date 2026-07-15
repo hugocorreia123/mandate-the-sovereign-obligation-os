@@ -1,0 +1,16 @@
+{
+  "n": 23,
+  "verdicts": {
+    "PARTIALLY_GROUNDED": 14,
+    "GROUNDED": 8,
+    "UNGROUNDED": 1
+  },
+  "mean_groundedness": 0.6522,
+  "issues": {
+    "wrong_date": 3,
+    "invented_fact": 12,
+    "misleading_phrasing": 2,
+    "wrong_legal_basis": 4,
+    "missing_review_stamp": 3
+  }
+}
