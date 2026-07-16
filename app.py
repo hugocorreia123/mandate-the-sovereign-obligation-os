@@ -239,7 +239,7 @@ with tab_do:
                        f"this session.")
 
         go = st.button("▶️  Process document", type="primary",
-                       use_container_width=True)
+                       width='stretch')
 
     with right:
         if go:
@@ -398,7 +398,7 @@ with tab_ledger:
                                else "—")),
                 "Status": status_nice,
                 "Where": o.jurisdiction})
-        st.dataframe(rows, hide_index=True, use_container_width=True)
+        st.dataframe(rows, hide_index=True, width='stretch')
         ok = g.verify_chain()
         st.caption(f"🔐 Tamper-proof record: "
                    f"{'✅ intact' if ok else '❌ TAMPERED'} — "

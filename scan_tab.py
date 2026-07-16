@@ -67,7 +67,7 @@ def render():
         img = SCANS / profile / f"{did}.png"
         if img.exists():
             st.image(str(img), caption=f"{did} — {profile}",
-                     use_container_width=True)
+                     width='stretch')
 
     with c2:
         st.markdown("##### The two readers")
@@ -99,7 +99,7 @@ def render():
                 "🔒 VLM read": ("🔴 " if v_bad else "") + _fmt(v),
                 "truth": _fmt(truth),
             })
-        st.dataframe(rows, hide_index=True, use_container_width=True)
+        st.dataframe(rows, hide_index=True, width='stretch')
         if corrupted:
             st.error(
                 f"**{corrupted} field(s) silently wrong from OCR** — "
@@ -121,7 +121,7 @@ def render():
          "abstains": "6.6%", "silently CORRUPTS": "0.4%",
          "s/page": "34.6",
          "verdict": "acceptable — misses abstain to a human"},
-    ], hide_index=True, use_container_width=True)
+    ], hide_index=True, width='stretch')
     st.markdown(
         "> **A 36× reduction in silent corruption, for 115× the "
         "latency.** Everywhere else in this system determinism is the "
