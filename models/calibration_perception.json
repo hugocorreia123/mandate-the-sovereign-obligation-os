@@ -1,0 +1,117 @@
+{
+  "prior": 0.9276,
+  "support": {
+    "amount_eur": {
+      "both_read_the_same": 5,
+      "one_reader_abstained": 27,
+      "readers_disagree": 8
+    },
+    "creditor": {
+      "both_read_the_same": 1,
+      "one_reader_abstained": 2,
+      "readers_disagree": 37
+    },
+    "deadline_amount": {
+      "both_read_the_same": 6,
+      "one_reader_abstained": 32,
+      "readers_disagree": 2
+    },
+    "deadline_unit": {
+      "both_read_the_same": 8,
+      "one_reader_abstained": 32
+    },
+    "debtor": {
+      "both_abstained": 8,
+      "both_read_the_same": 2,
+      "one_reader_abstained": 23,
+      "readers_disagree": 7
+    },
+    "event_date": {
+      "both_read_the_same": 2,
+      "one_reader_abstained": 36,
+      "readers_disagree": 2
+    },
+    "jurisdiction": {
+      "both_abstained": 4,
+      "both_read_the_same": 8,
+      "one_reader_abstained": 28
+    },
+    "language": {
+      "both_read_the_same": 32,
+      "readers_disagree": 8
+    },
+    "legal_basis": {
+      "both_abstained": 4,
+      "both_read_the_same": 8,
+      "one_reader_abstained": 28
+    },
+    "obligation_type": {
+      "both_read_the_same": 22,
+      "one_reader_abstained": 18
+    },
+    "regime_id": {
+      "both_abstained": 4,
+      "both_read_the_same": 7,
+      "one_reader_abstained": 28,
+      "readers_disagree": 1
+    }
+  },
+  "table": {
+    "amount_eur": {
+      "both_read_the_same": 0.8571,
+      "one_reader_abstained": 0.931,
+      "readers_disagree": 0.9
+    },
+    "creditor": {
+      "both_read_the_same": 0.6667,
+      "one_reader_abstained": 0.75,
+      "readers_disagree": 0.9487
+    },
+    "deadline_amount": {
+      "both_read_the_same": 0.875,
+      "one_reader_abstained": 0.9706,
+      "readers_disagree": 0.75
+    },
+    "deadline_unit": {
+      "both_read_the_same": 0.9,
+      "one_reader_abstained": 0.9706
+    },
+    "debtor": {
+      "both_abstained": 0.1,
+      "both_read_the_same": 0.75,
+      "one_reader_abstained": 0.96,
+      "readers_disagree": 0.8889
+    },
+    "event_date": {
+      "both_read_the_same": 0.75,
+      "one_reader_abstained": 0.9737,
+      "readers_disagree": 0.75
+    },
+    "jurisdiction": {
+      "both_abstained": 0.1667,
+      "both_read_the_same": 0.9,
+      "one_reader_abstained": 0.8667
+    },
+    "language": {
+      "both_read_the_same": 0.9706,
+      "readers_disagree": 0.9
+    },
+    "legal_basis": {
+      "both_abstained": 0.1667,
+      "both_read_the_same": 0.9,
+      "one_reader_abstained": 0.8667
+    },
+    "obligation_type": {
+      "both_read_the_same": 0.9583,
+      "one_reader_abstained": 0.95
+    },
+    "regime_id": {
+      "both_abstained": 0.1667,
+      "both_read_the_same": 0.8889,
+      "one_reader_abstained": 0.8667,
+      "readers_disagree": 0.6667
+    }
+  },
+  "target_precision": 0.95,
+  "tau": 0.0
+}
