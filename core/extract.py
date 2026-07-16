@@ -24,6 +24,9 @@ from pydantic import BaseModel
 MONTHS_PT = {m: i + 1 for i, m in enumerate(
     ["janeiro", "fevereiro", "março", "abril", "maio", "junho",
      "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"])}
+MONTHS_ES = {m: i + 1 for i, m in enumerate(
+    ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+     "agosto", "septiembre", "octubre", "noviembre", "diciembre"])}
 MONTHS_EN = {m: i + 1 for i, m in enumerate(
     ["January", "February", "March", "April", "May", "June", "July",
      "August", "September", "October", "November", "December"])}
@@ -66,6 +69,19 @@ def _pt_date_to_iso(s: str) -> Optional[str]:
         return None
 
 
+def _es_date_to_iso(s: str) -> Optional[str]:
+    """Parse an es prose date, or ABSTAIN. Same shape as pt but a
+    different month vocabulary — 'julio' is not 'julho'."""
+    m = re.search(r"(\d{1,2}) de (\w+) de (\d{4})", s)
+    if not m or m.group(2).lower() not in MONTHS_ES:
+        return None
+    try:
+        return date(int(m.group(3)), MONTHS_ES[m.group(2).lower()],
+                    int(m.group(1))).isoformat()
+    except ValueError:
+        return None
+
+
 def _en_date_to_iso(s: str) -> Optional[str]:
     """Parse an en prose date, or ABSTAIN. See _pt_date_to_iso."""
     m = re.search(r"(\d{1,2}) (\w+) (\d{4})", s)
@@ -80,7 +96,7 @@ def _en_date_to_iso(s: str) -> Optional[str]:
 
 def _amounts(text: str, lang: str) -> list[float]:
     out = []
-    if lang == "pt":
+    if lang in ("pt", "es"):
         for m in re.finditer(r"€\s*([\d.]+,\d{2})", text):
             out.append(float(m.group(1).replace(".", "")
                              .replace(",", ".")))
@@ -92,13 +108,50 @@ def _amounts(text: str, lang: str) -> list[float]:
 
 def extract_tier2(text: str) -> ExtractionResult:
     r = ExtractionResult()
-    pt = bool(re.search(r"\bde (janeiro|fevereiro|março|abril|maio|"
-                        r"junho|julho|agosto|setembro|outubro|novembro|"
-                        r"dezembro) de\b", text))
-    r.language = "pt" if pt else "en"
+    # Portuguese and Spanish SHARE two month names — "abril" and
+    # "agosto" are identical in both. Month-based detection therefore
+    # cannot separate pt from es on a document dated in April or
+    # August: every Portuguese citação from those months was
+    # classified Spanish. Disambiguate on the EXCLUSIVE months, and
+    # fall back to distinctive vocabulary when only a shared month
+    # appears.
+    es_only = re.search(r"\bde (enero|febrero|marzo|mayo|junio|julio|"
+                        r"septiembre|octubre|noviembre|diciembre) de\b",
+                        text, re.I)
+    pt_only = re.search(r"\bde (janeiro|fevereiro|março|maio|junho|"
+                        r"julho|setembro|outubro|novembro|dezembro) de\b",
+                        text, re.I)
+    if es_only and not pt_only:
+        r.language = "es"
+    elif pt_only and not es_only:
+        r.language = "pt"
+    else:
+        # only a shared month (abril/agosto), or none: use vocabulary
+        es_words = len(re.findall(r"\b(plazo|d[ií]as h[áa]biles|"
+                                  r"emplaza|demandada|conteste|"
+                                  r"notificaci[óo]n|Juzgado|LEC|"
+                                  r"alegaciones)\b", text, re.I))
+        pt_words = len(re.findall(r"\b(prazo|dias [úu]teis|cita[çc][ãa]o|"
+                                  r"R[ée]|contestar|notifica[çc][ãa]o|"
+                                  r"Tribunal Judicial|CPC|querendo)\b",
+                                  text, re.I))
+        r.language = ("es" if es_words > pt_words
+                      else "pt" if pt_words > 0 else "en")
+    es = r.language == "es"
+    pt = r.language == "pt"
 
     # regime + jurisdiction + legal basis
-    if "1182/71" in text:
+    if re.search(r"\bLEC\b|Ley de Enjuiciamiento Civil", text):
+        r.jurisdiction, r.regime_id = "ES", "lec_habiles"
+        r.legal_basis = "LEC arts. 130-133"
+    elif re.search(r"Ley 39/2015|\bLPAC\b", text):
+        r.jurisdiction, r.regime_id = "ES", "lpac_habiles"
+        r.legal_basis = "Ley 39/2015, art. 30.2"
+    elif re.search(r"d[ií]as naturales", text) and re.search(
+            r"C[oó]digo Civil", text):
+        r.jurisdiction, r.regime_id = "ES", "cc_naturales"
+        r.legal_basis = "CC art. 5.1"
+    elif "1182/71" in text:
         r.jurisdiction = "EU"
         r.legal_basis = "Reg. 1182/71"
         r.regime_id = ("eu_1182_working_days"
@@ -115,7 +168,8 @@ def extract_tier2(text: str) -> ExtractionResult:
         r.legal_basis = "CC art. 279.º"
 
     # deadline amount/unit
-    m = (re.search(r"prazo\s+de\s+(\d+)\s+dias", text)
+    m = (re.search(r"plazo\s+de\s+(\d+)\s+d[ií]as", text)
+         or re.search(r"prazo\s+de\s+(\d+)\s+dias", text)
          or re.search(r"antecedência\s+mínima\s+de\s+(\d+)\s+dias",
                       text)
          or re.search(r"within\s+(\d+)\s+(?:working\s+)?days", text)
@@ -124,22 +178,26 @@ def extract_tier2(text: str) -> ExtractionResult:
         r.deadline_amount, r.deadline_unit = int(m.group(1)), "days"
 
     # obligation type
-    if re.search(r"contestar|observations|dizer o que se lhe oferecer",
-                 text):
+    if re.search(r"contestar|conteste|observations|alegaciones|"
+                 r"dizer o que se lhe oferecer", text):
         r.obligation_type = "respond"
     elif re.search(r"não renovação|not to\s*\n?renew", text):
         r.obligation_type = "notify"
 
     # event date via anchors (distractor dates are elsewhere)
     anchor = re.search(
-        r"(?:efetuada em|rececionada em|deemed received on|"
-        r"being)\s+(\d{1,2}(?: de \w+ de | \w+ )\d{4})", text)
+        r"(?:efetuada em|efectuada en|rececionada em|notificada en|"
+        r"deemed received on|being)\s+"
+        r"(\d{1,2}(?: de \w+ de | \w+ )\d{4})", text)
     if anchor:
-        r.event_date = (_pt_date_to_iso(anchor.group(1)) if pt
+        r.event_date = (_es_date_to_iso(anchor.group(1)) if es
+                        else _pt_date_to_iso(anchor.group(1)) if pt
                         else _en_date_to_iso(anchor.group(1)))
 
     # parties by document anchors
     pats = [
+        (r"Se emplaza a\s+(.+?),\s*en calidad", "debtor"),
+        (r"demanda formulada por\s+(.+?),\s*en reclamaci", "creditor"),
         (r"Fica V\. Ex\.ª,\s*(.+?),\s*na qualidade", "debtor"),
         (r"que lhe move\s+(.+?),\s*Autor", "creditor"),
         (r"fica\s+(.+?)\s+notificada", "debtor"),
@@ -173,9 +231,10 @@ documents (Portuguese or English). Return ONLY a JSON object with
 exactly these keys (use null when not stated or unsure — never guess):
 
 language: "pt" | "en"
-jurisdiction: "PT" | "EU"
+jurisdiction: "PT" | "EU" | "ES"
 regime_id: "cpc_processual" | "cpa_uteis" | "cc_corridos" |
-           "eu_1182_days" | "eu_1182_working_days"
+           "eu_1182_days" | "eu_1182_working_days" |
+           "lec_habiles" | "lpac_habiles" | "cc_naturales"
 obligation_type: "respond" | "pay" | "renew" | "notify" | "file"
 event_date: ISO date the notice/citation was received or effected
             (NOT contract signature or proceedings-opened dates)
@@ -187,10 +246,14 @@ amount_eur: the MAIN amount at stake in EUR as a number
             (not fees/custas/taxa)
 legal_basis: short statute reference as stated
 
-regime_id guide: "dias úteis"+CPA -> cpa_uteis; CPC/art.138/569 ->
-cpc_processual; Código Civil art.279 (dias corridos) -> cc_corridos;
-Reg.1182/71 with "working days" -> eu_1182_working_days; Reg.1182/71
-otherwise -> eu_1182_days.
+regime_id guide:
+  PT: "dias úteis"+CPA -> cpa_uteis; CPC/art.138/569 -> cpc_processual;
+      Código Civil art.279 (dias corridos) -> cc_corridos.
+  EU: Reg.1182/71 with "working days" -> eu_1182_working_days;
+      Reg.1182/71 otherwise -> eu_1182_days.
+  ES: LEC / "días hábiles" in a court context -> lec_habiles;
+      Ley 39/2015 or LPAC (administrative) -> lpac_habiles;
+      "días naturales" / Código Civil art. 5 -> cc_naturales.
 
 DOCUMENT:
 """

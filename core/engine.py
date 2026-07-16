@@ -52,6 +52,13 @@ class JurisdictionPack:
     holiday_name: Callable[[date], Optional[str]]
     judicial_vacations: Callable[[int], list[tuple[date, date, str]]]
     rules: dict[str, Rule]
+    # A deadline expires at local midnight — in the jurisdiction's OWN
+    # timezone. This was hardcoded to Europe/Lisbon, which printed
+    # "23:59 Europe/Lisbon" on a Madrid court deadline: Spain is CET,
+    # Portugal is WET, so the stated expiry was an hour wrong on a
+    # legal filing. Found when the third pack landed — two
+    # jurisdictions in the same timezone had hidden it.
+    timezone: str = "Europe/Lisbon"
 
 
 @dataclass
@@ -133,24 +140,44 @@ def compute_deadline(pack: JurisdictionPack, regime_id: str,
     d = start - timedelta(days=1)
     while counted < amount:
         d += timedelta(days=1)
+        # Suspension is checked FIRST and for EVERY regime.
+        #
+        # This used to live only in the continuous-days branch, which
+        # worked for two jurisdictions by accident: Portugal suspends a
+        # CONTINUOUS count (CPC 138.º) and counts business days without
+        # suspension (CPA 87.º). Spain needs both at once — días
+        # hábiles AND agosto inhábil (LEC art. 130.2) — and the third
+        # pack exposed the assumption. A rule engine must not encode
+        # "these two properties never co-occur" unless a law says so.
+        if _in_ranges(d, vac_ranges) is not None:
+            continue
         if rule.count_business_days:
             if _is_weekend(d):
                 continue
             if pack.is_holiday(d):
                 continue
-            counted += 1
-        else:
-            vac = _in_ranges(d, vac_ranges)
-            if vac is not None:
-                # suspended: day does not count
-                if counted == 0 or True:
-                    pass
-                continue
-            counted += 1
+        counted += 1
 
+    n_susp_bd = 0
+    if vac_ranges:
+        cursor = start
+        while cursor <= d:
+            if _in_ranges(cursor, vac_ranges):
+                n_susp_bd += 1
+            cursor += timedelta(days=1)
     if rule.count_business_days:
+        # Name the suspension explicitly. The Spanish LEC skips the
+        # whole of August, which moved a deadline by a month — and the
+        # trace said only "skipping weekends and holidays", so a lawyer
+        # auditing the explanation could not see the rule that did it.
+        extra = ""
+        if n_susp_bd:
+            labels = {lbl for a, b, lbl in vac_ranges
+                      if not (b < start or a > d)}
+            extra = (f", and {n_susp_bd} suspended day(s) "
+                     f"[{'; '.join(sorted(labels))}]")
         steps.append(f"Counted {amount} business days (skipping "
-                     f"weekends and holidays): reaches "
+                     f"weekends and holidays{extra}): reaches "
                      f"{d.isoformat()} ({d.strftime('%A')}).")
     else:
         n_susp = 0
@@ -172,7 +199,7 @@ def compute_deadline(pack: JurisdictionPack, regime_id: str,
     due, roll_steps = _roll_end(pack, rule, d)
     steps.extend(roll_steps)
     steps.append(f"DUE: {due.isoformat()} ({due.strftime('%A')}), "
-                 f"23:59 Europe/Lisbon.")
+                 f"23:59 {pack.timezone}.")
     return DeadlineResult(due, rule.name, refs, steps)
 
 

@@ -29,10 +29,11 @@ from extract import ExtractionResult, TIERS
 from graph import (Claim, ClaimType, Deadline, Obligation,
                    ObligationGraph, ObligationStatus, ObligationType,
                    SourceSpan)
+from pack_es import ES
 from pack_eu import EU
 from pack_pt import PT
 
-PACKS = {"PT": PT, "EU": EU}
+PACKS = {"PT": PT, "EU": EU, "ES": ES}
 
 _CAL_PATH = Path("models/calibration.json")
 

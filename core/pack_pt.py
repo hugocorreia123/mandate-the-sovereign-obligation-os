@@ -76,6 +76,7 @@ def judicial_vacations(year: int) -> list[tuple[date, date, str]]:
 PT = JurisdictionPack(
     id="PT",
     name="Portugal",
+    timezone="Europe/Lisbon",
     is_holiday=is_holiday,
     holiday_name=holiday_name,
     judicial_vacations=judicial_vacations,
