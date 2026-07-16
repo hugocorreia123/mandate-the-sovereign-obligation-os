@@ -265,3 +265,40 @@ def _roll_end(pack: JurisdictionPack, rule: Rule, d: date
         d = nxt
         reason = blocked(d)
     return d, steps
+
+
+def days_remaining(pack: JurisdictionPack, regime_id: str,
+                   today: date, due: date,
+                   urgent: bool = False) -> tuple[int, int]:
+    """(calendar days, days that ACTUALLY COUNT under this regime).
+
+    The second number is the one that matters and the one every
+    calendar app gets wrong. "5 days left" is comfortable; five days
+    that contain a weekend and two holidays is one working day to
+    file. Under férias judiciais a thirty-day gap can contain ZERO.
+
+    The engine already knows which days count — it used exactly this
+    rule to compute the deadline. An alert that counts differently
+    from the law it is enforcing is a confident lie.
+    """
+    rule = pack.rules[regime_id]
+    cal = (due - today).days
+    if cal <= 0:
+        return cal, cal
+
+    vac: list[tuple[date, date, str]] = []
+    if rule.suspend_in_judicial_vacations and not urgent:
+        for y in range(today.year, due.year + 2):
+            vac.extend(pack.judicial_vacations(y))
+
+    counted = 0
+    d = today
+    while d < due:
+        d += timedelta(days=1)
+        if _in_ranges(d, vac) is not None:
+            continue
+        if rule.count_business_days:
+            if _is_weekend(d) or pack.is_holiday(d):
+                continue
+        counted += 1
+    return cal, counted
