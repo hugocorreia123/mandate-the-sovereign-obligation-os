@@ -10,8 +10,20 @@
 # is TESTED, from inside, at runtime. If the verifier says NOT
 # SOVEREIGN, believe the verifier and not this file.
 #
-# NOT YET VERIFIED ON A REAL DOCKER HOST — see PHASE 15 in the README.
-# Written from the design, not from a green run. Report what breaks.
+# VERIFIED. On a real Docker host, the verifier run INSIDE this stack
+# reports:
+#
+#   api.groq.com:443    ✓ blocked   Network is unreachable
+#   8.8.8.8:53          ✓ blocked   Network is unreachable
+#   ✓ SOVEREIGN — every egress attempt failed.
+#
+# The same command on the host machine reports NOT SOVEREIGN
+# (api.groq.com answers). Same code, two environments, opposite
+# verdicts — which is the only reason to believe either of them.
+#
+# Note the bare IPs: 8.8.8.8 and 1.1.1.1 fail with "Network is
+# unreachable", not with a DNS error. This is a routing block, not a
+# resolver policy — the strong form.
 
 services:
   ollama:

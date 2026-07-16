@@ -101,7 +101,9 @@ class Depth:
     PAYLOAD = 3     # a real HTTP response from the real host
 
 
-DEPTH_NAME = {0: "no DNS", 1: "TCP only", 2: "TLS", 3: "PAYLOAD OUT"}
+# Depth NONE is reached by a DNS failure OR a refused route — the
+# label must not claim to know which. The detail column says.
+DEPTH_NAME = {0: "nothing", 1: "TCP only", 2: "TLS", 3: "PAYLOAD OUT"}
 
 
 def _probe(host: str, port: int, timeout: float = 3.0
