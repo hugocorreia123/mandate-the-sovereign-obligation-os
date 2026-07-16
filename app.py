@@ -87,13 +87,33 @@ def ollama_up() -> bool:
 
 LOCAL_ON = ollama_up()
 
+# The degradation ladder, live. `outage` is the pull-the-cable demo:
+# it forces a rung down so a visitor can watch the system survive it.
+# NOTE: this must be initialised BEFORE TIERS, which reads it — the
+# first version of this patch put it after, and the app died on load.
+if "outage" not in st.session_state:
+    st.session_state.outage = set()
+
+
+def router():
+    from resilience import TierRouter
+    r = TierRouter(probes={"tier0": lambda: GROQ_ON,
+                           "tier1": lambda: LOCAL_ON,
+                           "tier2": lambda: True},
+                   forced_down=set(st.session_state.outage))
+    r.graph = st.session_state.get("graph")
+    return r
+
+
 TIERS = {
-    "tier0": {"label": "☁️ Cloud AI", "on": GROQ_ON,
+    "tier0": {"label": "☁️ Cloud AI",
+              "on": GROQ_ON and "tier0" not in st.session_state.outage,
               "help": "A frontier AI model (via Groq) reads the "
                       "document. Best quality. Needs internet; in a "
                       "real deployment the document would be redacted "
                       "before leaving the building."},
-    "tier1": {"label": "🔒 Local AI", "on": LOCAL_ON,
+    "tier1": {"label": "🔒 Local AI",
+              "on": LOCAL_ON and "tier1" not in st.session_state.outage,
               "help": "A smaller AI model running on the SAME computer "
                       "— nothing leaves the machine. This is the "
                       "sovereign, on-premises tier. Not available on "
@@ -240,6 +260,32 @@ with tab_do:
 
         go = st.button("▶️  Process document", type="primary",
                        width='stretch')
+
+        st.divider()
+        st.markdown("##### 🔌 Pull the cable")
+        st.caption(
+            "Every AI vendor demos the happy path. Simulate a cloud "
+            "outage and watch what survives — the deadline is computed "
+            "by code, so it does not care whether any AI is reachable.")
+        cable = st.toggle(
+            "Simulate a cloud outage (Cloud AI unreachable)",
+            value="tier0" in st.session_state.outage,
+            help="Forces the top rung down. The system degrades to the "
+                 "next available reader and LOGS the degradation as an "
+                 "auditable event — which is what a regulator asks for.")
+        if cable and "tier0" not in st.session_state.outage:
+            st.session_state.outage.add("tier0")
+            st.rerun()
+        if not cable and "tier0" in st.session_state.outage:
+            st.session_state.outage.discard("tier0")
+            st.rerun()
+        if st.session_state.outage:
+            r = router().route("tier0")
+            st.error(f"**Cloud AI is down.** Now running on "
+                     f"**{r.label}** — and the deadline engine is "
+                     f"untouched: it never needed the cloud.",
+                     icon="🔌")
+            st.caption(f"Logged: _{r.reason}_")
 
     with right:
         if go:
