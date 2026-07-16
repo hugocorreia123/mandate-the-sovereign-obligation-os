@@ -6,9 +6,9 @@
 </p>
 
 <p align="center">
-  <a href="https://mandate-sovereign-obligation-os.streamlit.app/"><img src="https://img.shields.io/badge/▶_LIVE_DEMO-try_it-FF4B4B?style=for-the-badge"/></a>
-  <img src="https://img.shields.io/badge/phases-10%2F20_shipped-F9A826?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/tests-134%2F134_green-2EA44F?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/phases-18%2F20_shipped-F9A826?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/tests-259%2F259_green-2EA44F?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/deadline_engine-34_verified_cases-1F6FEB?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/license-Apache--2.0-8957E5?style=for-the-badge"/>
 </p>
 
@@ -62,7 +62,8 @@ Six verbs, two rails. Down the centre: **Perceive → Compile → Compute → Ac
 | 10 | **Only an approver can approve — enforced, not documented** | Authorization is checked on the obligation state machine itself: reaching `SATISFIED` requires the `APPROVE` permission, deny-by-default. The ledger records **`role:subject`**, so it answers *who* approved, not merely *that* it was approved |
 | 11 | **Confidence is measured where it can be, and admitted where it can't** | Tier agreement is a free conformity signal (tier-2 is offline). For the local tier it separates errors with **AUC 0.996** vs **0.5 for a hardcoded constant** — enabling *400/408 fields auto-accepted at 99.8% precision, 8 to a human*. For the cloud tier the honest answer is **unmeasurable**: 1 error in 440 fields is nothing to calibrate against. Reported, not dressed up |
 | 12 | **On a scanned page, the cheap deterministic reader is the *dangerous* one** | At fax quality classical OCR **silently corrupts 14.3% of fields** — `121577.23` read as `121.57`, a 30-day deadline read as **0**, 2026 read as 2036 — every value plausible, well-formed, and invisible to every downstream check. A local VLM corrupts **0.4%** and abstains instead, at 115× the latency. **Cross-reader disagreement caught 63 of 63 corruptions, zero missed.** Everywhere else determinism is the safe floor; in perception it is the hazard |
-| 13 | **We validated the LLM judge. It failed — four different ways** | See *Judging the judge* below. Meanwhile deterministic checks, validated **7/7 against blind human labels**, took the drafts from 3 date errors, 7 language errors, a 10× money error and 4 empty drafts to **24/24 fully clean** |
+| 13 | **The numbers in this README are outputs, not claims** | Every published figure is **regenerated from committed evidence on every commit**, and CI fails if one drifts. Three honest tiers: *verified* (recomputed now), *pinned* (cached model output, re-scored — the model is not re-run, and the claim says so), *unverified* (needs a key, a model, or a human — named, not hidden). Proven: pinning `tier0=1.00` against 0.98 evidence exits non-zero. **The scorecard's first catch was the scorecard** — it had pinned a groundedness from a 6-document run killed by a quota, because the file recorded no `n` |
+| 14 | **We validated the LLM judge. It failed — four different ways** | See *Judging the judge* below. Meanwhile deterministic checks, validated **7/7 against blind human labels**, took the drafts from 3 date errors, 7 language errors, a 10× money error and 4 empty drafts to **24/24 fully clean** |
 
 <p align="center">
   <img src="docs/demo_process.png" width="900" alt="Mandate processing an EU regulatory notice end-to-end: the engine-computed deadline under Reg. 1182/71 with its cited trace, an AI-drafted response embedding that date verbatim, an all-green red-team panel, and the human approval gate"/>
@@ -109,20 +110,20 @@ A committed plan, not a wish-list. Every phase ships a capability that can be de
 - [x] **8 · Calibrated confidence** — tier agreement as a free conformity signal, 5-fold CV, conformal risk control. Local tier: **AUC 0.996 vs 0.5 for a constant**; 400/408 fields auto-accepted at 99.8% precision. Cloud tier: **unmeasurable** (1 error in 440) — reported, not hidden. Replaces a hardcoded `0.9`. *17 tests.*
 - [x] **9 · Judge validation (Cohen's κ)** — 22 drafts blind-labelled; **four independent judge failures** documented above; deterministic checks took the drafts to **24/24 clean**. *See “Judging the judge”.*
 
-### Capability depth — in progress
+### Capability depth — shipped
 
 - [x] **10 · Perception** — deterministic scan generator (4 profiles, calibrated by sweeping until OCR loses facts) + OCR and local-VLM reader tiers with **enforced language packs**. **OCR silently corrupts 14.3% of fields at fax quality; the VLM 0.4%; cross-reader disagreement caught 63/63.** Also fixed: impossible OCR dates crashed the extractor instead of abstaining. *12 tests.*
-- [ ] **11 · Spanish jurisdiction pack** — LEC/LPAC counting rules and a third measured language; proves multi-jurisdiction scale beyond a pair.
-- [ ] **12 · Obligation dependencies** — obligations that trigger, block, supersede or chain (amendment overrides original; renewal cascades). Makes the graph an actual graph.
-- [ ] **13 · Live-law retrieval with temporal validity** — RAG over Diário da República / EUR-Lex so drafts cite the statute text **as it stood at the event date**, not as it reads today.
-- [ ] **14 · Pull-the-cable resilience demo** — a live toggle forcing Tier 0 off mid-session: badge flips, the same document re-runs locally, the degradation logged as a ledger event.
+- [x] **11 · Spanish jurisdiction pack** — LEC 130-133 · LPAC 30.2 · CC art. 5, 20 hand-verified cases. **The third jurisdiction audited the architecture**: the engine could not express *días hábiles + agosto inhábil* (suspension was only applied to continuous counts — an assumption two packs had hidden), the deadline timezone was hardcoded to Lisbon (an hour wrong on a Madrid filing), and the trace named neither. All three fixed.
+- [x] **12 · Obligation dependencies** — typed edges, cycle detection, and **atomic supersession**: an amendment lands, the old deadline is legally dead, and *a superseded obligation that keeps counting down is worse than no system*. Adds open-vs-actionable. Also fixed: the ledger stored legal text as unicode escapes — unreadable to the humans it exists for.
+- [x] **13 · Statutes have a timeline** — `get()` requires an `as_of` date (keyword-only; the undated question is unaskable) and **refuses rather than falls back**: asking for CPC art. 138.º as of 2012 raises *"did not exist… refusing to answer with a later text: that would state a law that had not been enacted."* The engine cites the law in force **on the event date** and **warns when a deadline straddles a reform** — every case pending on 2013-09-01 started under one Civil Procedure Code and ended under another.
+- [x] **14 · Pull the cable** — degradation *enforced* and auditable, not merely true by construction: probed health, automatic demotion with a reason, and **every degradation appended to the hash-chained ledger beside the work it affected** (DORA asks what happened when the AI failed). Asserted as tests: **the deadline computes identically with every AI tier down** — the engine is not a rung on the ladder, it is the ground it stands on. Live toggle in the demo.
 
-### Productization
+### Productization — shipped
 
-- [ ] **15 · The sovereign appliance** — Docker-Compose profile, zero-egress enforced by network policy, offline model bundle.
-- [ ] **16 · Deadline monitoring & escalation** — the calendar becomes active: approach alerts, breach detection, escalation paths.
-- [ ] **17 · Cross-document reconciliation** — obligations checked against each other and against structured exports (contract says Net-30, invoice charged Net-60), each conflict evidence-linked.
-- [ ] **18 · Evaluation harness in CI** — the full eval suite runs on every commit, publishes a scorecard, tracks regressions across model versions.
+- [x] **15 · The sovereign appliance — proven, not promised.** `docker compose up`, then ask the box to phone home *from inside*. On the host: `api.groq.com` answers → **NOT SOVEREIGN**. Inside: *Network is unreachable* → **✓ SOVEREIGN**. Same code, opposite verdicts. The verifier measures **depth** (DNS → TCP → TLS → payload) because a deny-proxy accepts the socket and refuses the request — *route is not egress*. Catches proxy variables, DNS-only blocking (weak), and a credential inside the box.
+- [x] **16 · The calendar comes looking for you** — escalation measured in **the days the law counts**, not calendar days. Spain: identical dates, *42 calendar for both*, **9 legal** under LEC vs **30** under LPAC. Each level fires once, derived from the ledger so a restart cannot resurrect yesterday's warning. A breach transitions the obligation and lands in the hash chain. Sends nothing: Mandate surfaces, humans act.
+- [x] **17 · Documents disagree with each other** — and that is the only place the project's worst failure is visible. The OCR corruptions of Phase 10 (`185435.45 → 165435.45`, `121577.23 → 121.57`) were undetectable *inside* a document; across two they are **critical findings, diagnosed by the ratio** (two orders of magnitude = a misread decimal, not a dispute). Deterministic set logic, no model, no network. **Never decides who is right** — shows both and stops.
+- [x] **18 · The README's numbers are outputs** — regenerated from committed evidence on every commit; CI fails if one drifts. See results row 13.
 
 ### Capstone
 
@@ -173,7 +174,23 @@ The methodology carried over from [Tracer](https://github.com/hugocorreia123/tra
 
 **3 · A +0.31 swing from the evidence pack alone.** Cause of (2): the judge was handed an 11-field extraction *summary* as "the record", so every faithful citation of the source document — the case number, the court, the contract date — scored as an invention. Showing it the actual document moved **the same drafts** from 0.587 to **0.896**. `invented_fact` fell 14 → 2, of which one was the judge flagging **our own mandatory review stamp** as a hallucination.
 
-**4 · It rated four *empty strings* as GROUNDED.** Its best score of the entire project — **0.938** — came on a batch where 4 of 24 drafts were `""`. An empty draft makes no false claims, so it is perfectly "grounded". **A metric that cannot distinguish "says nothing wrong" from "says nothing" is not a quality metric.** The deterministic checks flagged that same batch as a regression, in the same run.
+The whole arc, one variable at a time:
+
+| judge sees | drafts | groundedness |
+|---|---|---|
+| an 11-field summary | good | 0.587 |
+| an 11-field summary | better (3 date bugs fixed) | 0.625 ↓ |
+| **the source document** | *identical* | **0.750** |
+| the source document, full batch | identical | 0.833 |
+| + the review stamp is not an invention | identical | 0.896 |
+| + a batch containing **4 empty drafts** | worse | **0.938** ↑ |
+| + every draft real, all six checks clean | **best** | **0.792** ↓ |
+
+Read the last two rows twice. **The judge's highest score came on its worst batch, and its honest score came on its best one.**
+
+**4 · It rated four *empty strings* as GROUNDED — and we can now say what that was worth.** Its best score of the entire project — **0.938** — came on a batch where 4 of 24 drafts were `""`. An empty draft makes no false claims, so it is perfectly "grounded". The deterministic checks flagged that same batch as a regression, in the same run.
+
+Once the empty drafts were fixed and every draft passed all six deterministic checks, the same judge on the same task scored **0.792**. **Removing 17% empty output cost 0.146 of groundedness.** The 0.938 was inflated *by silence*. **A metric that cannot distinguish "says nothing wrong" from "says nothing" is not a quality metric — and this one was quietly paying a premium for the second.**
 
 > **An LLM judge measures whatever you show it, and cannot penalise silence.** Where a property is mechanical — a date's placement, a currency's format, a draft's existence — check it mechanically. Reserve judgement for what genuinely requires judgement, and validate the harness before you believe the number.
 
