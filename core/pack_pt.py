@@ -96,6 +96,7 @@ PT = JurisdictionPack(
             legal_basis=("CPC, art. 138.º (contínuo; suspensão em férias "
                          "judiciais; n.º 2 end-roll) + CC art. 279.º b) "
                          "+ LOSJ art. 28.º"),
+            cites=(("CPC", "138.º"),),
             count_business_days=False,
             suspend_in_judicial_vacations=True,
             roll_end_on=("sat", "sun", "holiday"),

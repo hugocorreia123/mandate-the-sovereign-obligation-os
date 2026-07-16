@@ -88,6 +88,7 @@ ES = JurisdictionPack(
             legal_basis=("LEC, arts. 130-133: días hábiles; agosto "
                          "inhábil (art. 130.2); cómputo desde el día "
                          "siguiente (art. 133.1)"),
+            cites=(("LEC", "130"),),
             count_business_days=True,          # Sat/Sun/holidays skipped
             suspend_in_judicial_vacations=True,  # + all of August
             roll_end_on=("sat", "sun", "holiday"),

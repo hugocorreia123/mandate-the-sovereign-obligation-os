@@ -87,6 +87,7 @@ EU = JurisdictionPack(
             legal_basis=("Reg. (EEC, Euratom) 1182/71, art. 3(1) "
                          "event-day exclusion; 3(2)(b); 3(3) holidays "
                          "count; 3(4) end-roll to next working day"),
+            cites=(("Reg. 1182/71", "3(4)"),),
             count_business_days=False,
             suspend_in_judicial_vacations=False,
             roll_end_on=("sat", "sun", "holiday"),

@@ -37,11 +37,22 @@ class Rule:
     id: str
     name: str
     legal_basis: str
+    # Structured citations: (code, article). Free text is for humans;
+    # these are for the statute store, which can then answer "what did
+    # this article say ON THE EVENT DATE" rather than "what does it say
+    # now". Parsing article numbers back out of prose is exactly the
+    # kind of fragility this project refuses.
     count_business_days: bool = False
     suspend_in_judicial_vacations: bool = False
     # end-roll: which non-working end days push to next business day
     roll_end_on: tuple[str, ...] = ()  # subset of ("sat", "sun", "holiday")
     start_day_excluded: bool = True  # event day not counted
+    # Structured citations: (code, article). Free text is for humans;
+    # these are for the statute store, which can then answer "what did
+    # this article say ON THE EVENT DATE" rather than "what does it say
+    # now". Parsing article numbers back out of prose is exactly the
+    # kind of fragility this project refuses.
+    cites: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass
@@ -86,7 +97,8 @@ def _in_ranges(d: date, ranges: list[tuple[date, date, str]]
 
 def compute_deadline(pack: JurisdictionPack, regime_id: str,
                      event_date: date, amount: int, unit: Unit = "days",
-                     urgent: bool = False) -> DeadlineResult:
+                     urgent: bool = False,
+                     store=None) -> DeadlineResult:
     """Compute a deadline under `pack`'s regime `regime_id`.
 
     urgent=True disables judicial-vacation suspension (processos
@@ -104,6 +116,20 @@ def compute_deadline(pack: JurisdictionPack, regime_id: str,
 
     steps.append(f"Event date: {event_date.isoformat()} "
                  f"({event_date.strftime('%A')}).")
+
+    # Which law applied ON THE DAY? Not which law applies now.
+    if store is not None and rule.cites:
+        for code, article in rule.cites:
+            try:
+                v = store.get(code, article, as_of=event_date)
+                steps.append(
+                    f"Law in force on the event date: {v.citation}"
+                    + (f" [{v.amended_by}]" if v.amended_by else ""))
+                refs.append(v.citation)
+            except Exception as e:
+                steps.append(
+                    f"LAW NOT RESOLVED for {code} art. {article} on "
+                    f"{event_date.isoformat()}: {e}")
 
     # ---------- months / years: corresponding-day rule ----------
     if unit in ("months", "years"):
@@ -198,6 +224,17 @@ def compute_deadline(pack: JurisdictionPack, regime_id: str,
 
     due, roll_steps = _roll_end(pack, rule, d)
     steps.extend(roll_steps)
+    if store is not None and rule.cites:
+        for code, article in rule.cites:
+            changed = store.amended_between(code, article, event_date,
+                                            due)
+            for v in changed:
+                steps.append(
+                    f"WARNING: {code} art. {article} was AMENDED on "
+                    f"{v.valid_from.isoformat()} "
+                    f"({v.amended_by}) — between the event and this "
+                    f"deadline. The period straddles a reform; a human "
+                    f"must confirm which text governs.")
     steps.append(f"DUE: {due.isoformat()} ({due.strftime('%A')}), "
                  f"23:59 {pack.timezone}.")
     return DeadlineResult(due, rule.name, refs, steps)
