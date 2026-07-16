@@ -32,3 +32,26 @@ def test_tier2_abstains_on_unknown_text():
     assert r.regime_id is None
     assert r.deadline_amount is None
     assert r.event_date is None
+
+
+# ----------------------- OCR garbage must abstain, not crash (Ph. 10)
+def test_impossible_dates_abstain_rather_than_crash():
+    """A fax-quality scan produced '31 de fevereiro de 2026'. The
+    parser raised ValueError and aborted the whole document. An
+    unreadable field must route to a human, not kill the pipeline."""
+    for junk in ("efetuada em 31 de fevereiro de 2026",
+                 "efetuada em 99 de março de 2026",
+                 "deemed received on 31 February 2026",
+                 "deemed received on 45 June 2026"):
+        r = extract_tier2(junk)          # must not raise
+        assert r.event_date is None
+
+
+def test_ocr_mangled_document_does_not_crash_the_extractor():
+    mangled = ("Tribusal Judicial da Comarca de Colmbra\n"
+               "Fica v. Ex.º, Lúsitânia Construções, Lda., na "
+               "qualidade de Mó, ltada para, no preso de MM dias, "
+               "contestar\ne pagamento da quantia de € 165.435,45\n"
+               "efetuada em 31 de fevereiro de 2026.")
+    r = extract_tier2(mangled)           # must not raise
+    assert r.event_date is None

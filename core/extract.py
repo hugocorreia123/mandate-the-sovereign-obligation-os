@@ -48,19 +48,34 @@ FIELDS = list(ExtractionResult.model_fields)
 
 # ================= tier 2: deterministic heuristics =================
 def _pt_date_to_iso(s: str) -> Optional[str]:
+    """Parse a pt prose date, or ABSTAIN.
+
+    OCR of a damaged page produces impossible dates ("31 de fevereiro",
+    "de 20226"). Raising here would abort the whole document; the
+    doctrine is to return None so the field routes to a human. Found
+    by the Phase 10 scan benchmark, which crashed on a fax-quality
+    page.
+    """
     m = re.search(r"(\d{1,2}) de (\w+) de (\d{4})", s)
     if not m or m.group(2) not in MONTHS_PT:
         return None
-    return date(int(m.group(3)), MONTHS_PT[m.group(2)],
-                int(m.group(1))).isoformat()
+    try:
+        return date(int(m.group(3)), MONTHS_PT[m.group(2)],
+                    int(m.group(1))).isoformat()
+    except ValueError:
+        return None
 
 
 def _en_date_to_iso(s: str) -> Optional[str]:
+    """Parse an en prose date, or ABSTAIN. See _pt_date_to_iso."""
     m = re.search(r"(\d{1,2}) (\w+) (\d{4})", s)
     if not m or m.group(2) not in MONTHS_EN:
         return None
-    return date(int(m.group(3)), MONTHS_EN[m.group(2)],
-                int(m.group(1))).isoformat()
+    try:
+        return date(int(m.group(3)), MONTHS_EN[m.group(2)],
+                    int(m.group(1))).isoformat()
+    except ValueError:
+        return None
 
 
 def _amounts(text: str, lang: str) -> list[float]:

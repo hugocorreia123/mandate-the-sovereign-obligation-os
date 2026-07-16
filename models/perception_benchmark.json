@@ -1,0 +1,98 @@
+{
+  "ocr:fax": {
+    "n_docs": 40,
+    "accuracy": 0.2545,
+    "abstain_rate": 0.6023,
+    "corruption_rate": 0.1432,
+    "mean_seconds": 0.29,
+    "critical_corruptions": [
+      {
+        "doc": "pt_cit_000",
+        "field": "amount_eur",
+        "read": "165435.45",
+        "truth": "185435.45"
+      },
+      {
+        "doc": "pt_cit_001",
+        "field": "amount_eur",
+        "read": "259.07",
+        "truth": "11501.31"
+      },
+      {
+        "doc": "pt_cit_004",
+        "field": "event_date",
+        "read": "2036-04-23",
+        "truth": "2026-04-23"
+      },
+      {
+        "doc": "pt_cit_004",
+        "field": "amount_eur",
+        "read": "167008.51",
+        "truth": "167009.51"
+      },
+      {
+        "doc": "pt_cit_005",
+        "field": "amount_eur",
+        "read": "56329.73",
+        "truth": "56329.22"
+      },
+      {
+        "doc": "pt_cit_006",
+        "field": "amount_eur",
+        "read": "647.69",
+        "truth": "141452.69"
+      },
+      {
+        "doc": "pt_cpa_006",
+        "field": "amount_eur",
+        "read": "1452.14",
+        "truth": "1652.18"
+      },
+      {
+        "doc": "en_reg_000",
+        "field": "deadline_amount",
+        "read": "18",
+        "truth": "15"
+      },
+      {
+        "doc": "en_ren_000",
+        "field": "event_date",
+        "read": "2036-10-05",
+        "truth": "2026-10-03"
+      },
+      {
+        "doc": "en_ren_002",
+        "field": "deadline_amount",
+        "read": "0",
+        "truth": "30"
+      },
+      {
+        "doc": "en_ren_006",
+        "field": "amount_eur",
+        "read": "121.57",
+        "truth": "121577.23"
+      },
+      {
+        "doc": "en_ren_007",
+        "field": "amount_eur",
+        "read": "641.49",
+        "truth": "651498.72"
+      }
+    ]
+  },
+  "vlm:fax": {
+    "n_docs": 40,
+    "accuracy": 0.9295,
+    "abstain_rate": 0.0659,
+    "corruption_rate": 0.0045,
+    "mean_seconds": 34.6,
+    "critical_corruptions": [
+      {
+        "doc": "en_ren_005",
+        "field": "amount_eur",
+        "read": "639.11",
+        "truth": "639115.13"
+      }
+    ]
+  }
+}
