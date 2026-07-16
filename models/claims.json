@@ -1,0 +1,17 @@
+{
+  "crossreader_catch": 1.0,
+  "deadline_cases_es": 20.0,
+  "deadline_cases_eu": 13.0,
+  "deadline_cases_pt": 21.0,
+  "judge_groundedness": 0.9167,
+  "judge_kappa": 0.6154,
+  "ocr_fax_corrupt": 0.1432,
+  "tests_total": 255.0,
+  "tier0_macro": 0.9977,
+  "tier1_macro": 0.9068,
+  "tier1_macro_en": 0.8807,
+  "tier1_macro_pt": 0.9242,
+  "tier2_macro": 1.0,
+  "vlm_fax_accuracy": 0.9295,
+  "vlm_fax_corrupt": 0.0045
+}

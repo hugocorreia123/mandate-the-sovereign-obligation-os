@@ -1,0 +1,72 @@
+# Mandate — CI.
+#
+# Two jobs, because they answer different questions:
+#
+#   tests      does the code still do what it says?
+#   scorecard  does the README still say something true?
+#
+# The second one is the unusual one. Every number published in the
+# README is regenerated here from committed evidence, and this fails if
+# one drifts. A claim nothing re-checks is a claim that has already
+# started rotting — which is precisely the criticism this project
+# levels at other people's evaluations.
+#
+# What CI deliberately does NOT do: call a model. No key lives here, so
+# nothing in this file can spend money or leak a document. The cached
+# model outputs in runs/ are evidence; re-scoring them catches a scorer
+# bug or a schema change, which is the failure that actually happens.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - name: Install tesseract with the language packs
+        # perception.py REFUSES to read Portuguese with the English
+        # model — the packs are not optional, so CI installs them or
+        # the OCR tests would skip silently.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-por \
+            tesseract-ocr-spa tesseract-ocr-eng
+      - run: uv sync
+      - name: The deterministic core must never break
+        run: uv run pytest -q
+
+  scorecard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - run: uv sync
+      - name: Regenerate the corpus (deterministic, seed 42)
+        run: |
+          uv run python -c "import sys; sys.path.insert(0,'core'); \
+            from corpus import generate_corpus; \
+            generate_corpus('data/corpus')"
+      - name: Every published number, recomputed from evidence
+        run: uv run python scripts/scorecard.py
+
+  appliance:
+    # The sovereignty claim, tested the only way it can be: build the
+    # box and ask it to phone home from inside.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the appliance
+        run: docker compose build mandate
+      - name: Prove it cannot reach the outside world
+        run: |
+          docker compose up -d
+          sleep 5
+          docker compose exec -T mandate \
+            python scripts/verify_sovereignty.py
