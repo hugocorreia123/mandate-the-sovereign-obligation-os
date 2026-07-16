@@ -6,8 +6,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/phases-9%2F20_shipped-F9A826?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/tests-122%2F122_green-2EA44F?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/phases-10%2F20_shipped-F9A826?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/tests-134%2F134_green-2EA44F?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/deadline_engine-34_verified_cases-1F6FEB?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/license-Apache--2.0-8957E5?style=for-the-badge"/>
 </p>
@@ -61,7 +61,8 @@ Six verbs, two rails. Down the centre: **Perceive → Compile → Compute → Ac
 | 9 | **The cloud never sees a name** | Tier-0 egress is pseudonymized *by the offline tier*: tier-2 finds the parties locally, identities become stable placeholders (`[PERSON_1] sues [COMPANY_1]`), the mapping never leaves, and identities are restored on return. Verified: no PII in the egress text, extraction quality unchanged |
 | 10 | **Only an approver can approve — enforced, not documented** | Authorization is checked on the obligation state machine itself: reaching `SATISFIED` requires the `APPROVE` permission, deny-by-default. The ledger records **`role:subject`**, so it answers *who* approved, not merely *that* it was approved |
 | 11 | **Confidence is measured where it can be, and admitted where it can't** | Tier agreement is a free conformity signal (tier-2 is offline). For the local tier it separates errors with **AUC 0.996** vs **0.5 for a hardcoded constant** — enabling *400/408 fields auto-accepted at 99.8% precision, 8 to a human*. For the cloud tier the honest answer is **unmeasurable**: 1 error in 440 fields is nothing to calibrate against. Reported, not dressed up |
-| 12 | **We validated the LLM judge. It failed — four different ways** | See *Judging the judge* below. Meanwhile deterministic checks, validated **7/7 against blind human labels**, took the drafts from 3 date errors, 7 language errors, a 10× money error and 4 empty drafts to **24/24 fully clean** |
+| 12 | **On a scanned page, the cheap deterministic reader is the *dangerous* one** | At fax quality classical OCR **silently corrupts 14.3% of fields** — `121577.23` read as `121.57`, a 30-day deadline read as **0**, 2026 read as 2036 — every value plausible, well-formed, and invisible to every downstream check. A local VLM corrupts **0.4%** and abstains instead, at 115× the latency. **Cross-reader disagreement caught 63 of 63 corruptions, zero missed.** Everywhere else determinism is the safe floor; in perception it is the hazard |
+| 13 | **We validated the LLM judge. It failed — four different ways** | See *Judging the judge* below. Meanwhile deterministic checks, validated **7/7 against blind human labels**, took the drafts from 3 date errors, 7 language errors, a 10× money error and 4 empty drafts to **24/24 fully clean** |
 
 <p align="center">
   <img src="docs/demo_process.png" width="900" alt="Mandate processing an EU regulatory notice end-to-end: the engine-computed deadline under Reg. 1182/71 with its cited trace, an AI-drafted response embedding that date verbatim, an all-green red-team panel, and the human approval gate"/>
@@ -108,9 +109,9 @@ A committed plan, not a wish-list. Every phase ships a capability that can be de
 - [x] **8 · Calibrated confidence** — tier agreement as a free conformity signal, 5-fold CV, conformal risk control. Local tier: **AUC 0.996 vs 0.5 for a constant**; 400/408 fields auto-accepted at 99.8% precision. Cloud tier: **unmeasurable** (1 error in 440) — reported, not hidden. Replaces a hardcoded `0.9`. *17 tests.*
 - [x] **9 · Judge validation (Cohen's κ)** — 22 drafts blind-labelled; **four independent judge failures** documented above; deterministic checks took the drafts to **24/24 clean**. *See “Judging the judge”.*
 
-### Capability depth
+### Capability depth — in progress
 
-- [ ] **10 · VLM perception** — parse real scanned PDFs; benchmark a vision-language model against a layout model, measured; closes the biggest current limitation (synthetic text corpus).
+- [x] **10 · Perception** — deterministic scan generator (4 profiles, calibrated by sweeping until OCR loses facts) + OCR and local-VLM reader tiers with **enforced language packs**. **OCR silently corrupts 14.3% of fields at fax quality; the VLM 0.4%; cross-reader disagreement caught 63/63.** Also fixed: impossible OCR dates crashed the extractor instead of abstaining. *12 tests.*
 - [ ] **11 · Spanish jurisdiction pack** — LEC/LPAC counting rules and a third measured language; proves multi-jurisdiction scale beyond a pair.
 - [ ] **12 · Obligation dependencies** — obligations that trigger, block, supersede or chain (amendment overrides original; renewal cascades). Makes the graph an actual graph.
 - [ ] **13 · Live-law retrieval with temporal validity** — RAG over Diário da República / EUR-Lex so drafts cite the statute text **as it stood at the event date**, not as it reads today.
@@ -127,6 +128,38 @@ A committed plan, not a wish-list. Every phase ships a capability that can be de
 
 - [ ] **19 · End-to-end hardening pass** — the whole system under adversarial input, load, and simulated outage.
 - [ ] **20 · Findings paper + tagged release** — the definitive writeup and a versioned release.
+
+---
+
+## Perception: what a scan does to a legal fact
+
+Every number in this project before Phase 10 was measured on **clean text**. Real obligations arrive as scans. The corpus is now rendered to pages and degraded deterministically (skew, sensor speckle, defocus, JPEG damage, exposure, resolution loss) across four profiles — `clean · office · photocopy · fax`. The profiles were **calibrated by sweeping until OCR began losing facts**: the first attempt was too gentle to matter (tesseract shrugged it off entirely), and the useful band turned out to be narrow.
+
+Then the same extraction stack was run on top of two readers:
+
+| reader | accuracy | abstains | **silently CORRUPTS** | s/page | verdict |
+|---|---|---|---|---|---|
+| **tesseract** (classical OCR, offline, free) | 0.255 | 60.2% | **14.3%** | 0.3 | **UNUSABLE**: >5% of fields silently wrong |
+| **Qwen2.5-VL 7B** (local VLM, offline) | **0.929** | 6.6% | **0.4%** | 34.6 | acceptable: corruption <1%, misses abstain to a human |
+
+**A 36× reduction in silent corruption for 115× the latency.** What OCR actually did to the money and the dates:
+
+| field | OCR read | truth |
+|---|---|---|
+| contract value | `121.57` | `121577.23` |
+| contract value | `641.49` | `651498.72` |
+| claim amount | `647.69` | `141452.69` |
+| claim amount | `165435.45` | `185435.45` |
+| response deadline | `0` days | `30` days |
+| event date | `2036-04-23` | `2026-04-23` |
+
+Not one of these is malformed. Every one parses, validates, and flows into an obligation. **A deadline of zero days. A contract value off by three orders of magnitude.**
+
+This inverts the project's own pattern. At the extraction layer the deterministic tier is the safe floor — it does exactly what its anchors say and nothing else. At the perception layer the deterministic tier is the hazard: **OCR never says "I can't read this."** It guesses, fluently, in the right format. The VLM behaves like the local text model does — it abstains rather than invent — and that is what the 34 seconds buy.
+
+**A second reader is an alarm.** Running both and treating disagreement as doubt flagged **63 of 63** of OCR's silent corruptions, with **zero** cases where both readers agreed on the same wrong value.
+
+*Honest counterpart:* the same signal does **not** calibrate the VLM's own confidence. Disagreement means *OCR* is wrong, not the VLM — so it barely moves the VLM's reliability (AUC 0.626 once the tautological "both abstained" cell is excluded from the inflated 0.867; a hardcoded 0.9 still wins on ECE, because the VLM sits on a 93% base rate). One signal, two jobs, only one of which it can do. Stated because the flattering number was the easy one to publish.
 
 ---
 
@@ -226,7 +259,7 @@ Reproduce the ladder benchmark: `uv run python scripts/benchmark_extraction.py -
 
 ## Scope & honest limitations
 
-The corpus is synthetic — realistic templates, not scanned real filings (VLM parsing is Phase 10). Jurisdiction packs encode the common regimes and **document their exclusions** (municipal holidays, *dilação*, the ≥6-month CPC exception, art. 139.º grace days) — a simplified, source-cited engineering implementation, **not legal advice**. Tier-2 heuristics score 100% because they are anchored to the corpus templates — a ceiling, honesty-noted, not a claim that regex beats LLMs on real documents. The benchmark is n = 40 (directional). Encoded legal rules should be reviewed by a qualified lawyer before any real use.
+The corpus is synthetic — realistic templates rendered to pages and degraded deterministically (Phase 10), not photographs of genuine filings; a handful of real public documents remain future work. Jurisdiction packs encode the common regimes and **document their exclusions** (municipal holidays, *dilação*, the ≥6-month CPC exception, art. 139.º grace days) — a simplified, source-cited engineering implementation, **not legal advice**. Tier-2 heuristics score 100% because they are anchored to the corpus templates — a ceiling, honesty-noted, not a claim that regex beats LLMs on real documents. The benchmark is n = 40 (directional). Encoded legal rules should be reviewed by a qualified lawyer before any real use.
 
 ---
 
