@@ -1,0 +1,59 @@
+# Mandate — the sovereign profile.
+#
+#   docker compose up -d
+#   docker compose exec mandate python scripts/verify_sovereignty.py
+#
+# The second command is the point. This file EXPRESSES an intent;
+# `internal: true` removes the containers' route to the outside world.
+# But configuration drifts — a stray network, a helpful proxy variable,
+# a base image that phones home — so the appliance is not trusted, it
+# is TESTED, from inside, at runtime. If the verifier says NOT
+# SOVEREIGN, believe the verifier and not this file.
+#
+# NOT YET VERIFIED ON A REAL DOCKER HOST — see PHASE 15 in the README.
+# Written from the design, not from a green run. Report what breaks.
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: mandate-ollama
+    networks: [sovereign]
+    volumes:
+      # The model lives here. Pull it ONCE on a connected machine, then
+      # move the volume: an air-gapped site cannot `ollama pull`.
+      - ollama-models:/root/.ollama
+    # No published ports: only the app talks to the model, and only
+    # over the internal network.
+    restart: unless-stopped
+
+  mandate:
+    build: .
+    container_name: mandate-app
+    networks: [sovereign]
+    ports:
+      # The UI, and nothing else. Inbound only — this does not give the
+      # container a route OUT.
+      - "8501:8501"
+    volumes:
+      # The ledger must outlive the container. An audit trail that dies
+      # with a restart is not an audit trail.
+      - mandate-data:/app/data
+    environment:
+      - MANDATE_PROFILE=sovereign
+      - OLLAMA_HOST=http://ollama:11434
+      # Deliberately absent: GROQ_API_KEY. A key inside a sovereign
+      # appliance has no purpose, and its presence means someone
+      # intended egress. The verifier reports it as a finding.
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+networks:
+  sovereign:
+    # No route to the outside world. This is the wall; the verifier is
+    # the inspection.
+    internal: true
+
+volumes:
+  ollama-models:
+  mandate-data:

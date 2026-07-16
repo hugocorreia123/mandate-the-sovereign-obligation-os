@@ -1,0 +1,10 @@
+.venv/
+.git/
+__pycache__/
+*.pyc
+data/scans/
+data/corpus/
+runs/
+.env
+.pytest_cache/
+*.md
