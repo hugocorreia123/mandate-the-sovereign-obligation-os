@@ -124,3 +124,42 @@ def test_open_obligations_sorted_by_deadline(g):
         legal_refs=[], steps=[]))
     assert [o.description for o in g.open_obligations()][:2] == \
         ["sooner", "later"]
+
+
+# ------------------------- the ledger must be readable (Phase 12)
+def test_legal_text_is_stored_readably_not_as_escapes(g):
+    """The ledger stored Portuguese as "prorroga\\u00e7\\u00e3o" —
+    valid JSON, unreadable to the humans it exists for, invisible to
+    grep. A log whose premise is "a court may one day read this" must
+    be readable in the language of the jurisdiction."""
+    c = g.add_claim(_claim())
+    o = g.create_obligation(Obligation(
+        type=ObligationType.RESPOND, description="contestação",
+        debtor="Lusitânia Construções, Lda.", creditor="Ana Silva",
+        jurisdiction="PT", regime_id="cpc_processual",
+        event_date=date(2026, 3, 23), claim_ids=[c.id]))
+    g.transition(o.id, ObligationStatus.IN_PROGRESS, "agent",
+                 note="prorrogação deferida; férias judiciais")
+    raw = g.log_path.read_text(encoding="utf-8")
+    assert "prorrogação" in raw
+    assert "Lusitânia Construções" in raw
+    assert "\\u00e7" not in raw
+    assert g.verify_chain() is True
+
+
+def test_the_chain_still_detects_tampering_with_readable_text(g):
+    """Readability must not cost tamper-evidence."""
+    import json
+    c = g.add_claim(_claim())
+    g.create_obligation(Obligation(
+        type=ObligationType.RESPOND, description="citação",
+        debtor="Empresa Ré", creditor="Autor", jurisdiction="PT",
+        regime_id="cpc_processual", event_date=date(2026, 3, 23),
+        claim_ids=[c.id]))
+    assert g.verify_chain() is True
+    lines = g.log_path.read_text(encoding="utf-8").splitlines()
+    ev = json.loads(lines[-1])
+    ev["payload"]["obligation"]["debtor"] = "Outra Empresa"
+    lines[-1] = json.dumps(ev, default=str, ensure_ascii=False)
+    g.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    assert g.verify_chain() is False
