@@ -6,9 +6,9 @@
 </p>
 
 <p align="center">
+  <a href="https://mandate-sovereign-obligation-os.streamlit.app/"><img src="https://img.shields.io/badge/▶_LIVE_DEMO-try_it-FF4B4B?style=for-the-badge"/></a>
   <img src="https://img.shields.io/badge/phases-10%2F20_shipped-F9A826?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/tests-134%2F134_green-2EA44F?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/deadline_engine-34_verified_cases-1F6FEB?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/license-Apache--2.0-8957E5?style=for-the-badge"/>
 </p>
 
