@@ -192,9 +192,9 @@ m4.metric("Records intact",
           "✅ Yes" if not Path(LOG).exists() or g.verify_chain()
           else "❌ Tampered")
 
-tab_do, tab_ledger, tab_how, tab_help = st.tabs(
-    ["📥 Try it", "📋 Tracked obligations", "🔬 How it works & scores",
-     "❓ Help"])
+tab_do, tab_scan, tab_ledger, tab_how, tab_help = st.tabs(
+    ["📥 Try it", "🖨️ Scanned documents", "📋 Tracked obligations",
+     "🔬 How it works & scores", "❓ Help"])
 
 # ==================================================================
 # TAB: TRY IT
@@ -356,6 +356,15 @@ with tab_do:
                 st.info("The reader wasn't confident enough about this "
                         "document, so it was routed to a human instead "
                         "of guessing — the safe choice.")
+
+# ==================================================================
+# TAB: SCANS — what a scanner does to a legal fact (Phase 10)
+with tab_scan:
+    try:
+        import scan_tab
+        scan_tab.render()
+    except Exception as e:
+        st.info(f"Scan evidence unavailable in this deployment ({e})")
 
 # ==================================================================
 # TAB: LEDGER
