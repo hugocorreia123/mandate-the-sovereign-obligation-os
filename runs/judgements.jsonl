@@ -1,6 +1,24 @@
-{"doc_id": "pt_cit_000", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_cit_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Party addresses (Ana Silva and Lusit\u00e2nia Constru\u00e7\u00f5es, Lda.) are not present in the source document"}]}
 {"doc_id": "en_reg_000", "verdict": "GROUNDED", "issues": []}
 {"doc_id": "en_ren_000", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "pt_cpa_000", "verdict": "GROUNDED", "issues": []}
-{"doc_id": "en_reg_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "misleading_phrasing", "detail": "The draft states the administrative fine is \"EUR 64671.1\" whereas the source document specifies the fine is \"up to EUR 64,671.10\". Omitting the \"up to\" qualifier may mislead about the exact amount."}]}
+{"doc_id": "pt_cpa_000", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "missing_review_stamp", "detail": "Draft includes statement \"MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO\", which is not supported by the source document or the computed record."}]}
+{"doc_id": "pt_ren_000", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_cit_001", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_reg_001", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_ren_001", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_cpa_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The statement \"MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO\" is not supported by either the source document or the computed record."}]}
+{"doc_id": "pt_ren_001", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Address 'Avenida da Liberdade, 123 1200-456 Lisboa' is not present in the source document or computed record."}, {"type": "missing_review_stamp", "detail": "Draft contains note 'MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO' which is not supported by the source document."}]}
+{"doc_id": "pt_cit_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "missing_review_stamp", "detail": "Draft includes statement \"MINUTA \u2014 CARECE DE REVIS\u00c3O POR ADVOGADO\", which is not supported by the source document or computed record."}]}
+{"doc_id": "en_reg_002", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_ren_002", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_cpa_002", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "pt_ren_002", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft includes postal addresses for Minho T\u00eaxteis, Lda. (Avenida da Ind\u00fastria, 123, 4700-123 Braga) and Nuno Lopes (Rua das Oliveiras, 45, 4700-456 Braga) which are not present in the source document or computed record."}]}
+{"doc_id": "pt_cit_003", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_reg_003", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_ren_003", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "The draft states that Iberia Renewables S.A. must confirm its intention to renew the Agreement, which is not supported by the source document or the computed record."}]}
+{"doc_id": "pt_cpa_003", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "missing_review_stamp", "detail": "Draft states it lacks lawyer review, which is not supported by the source document or computed record"}]}
+{"doc_id": "pt_ren_003", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "invented_fact", "detail": "Address 'Avenida do Com\u00e9rcio, 123, 4000-123 Porto' is not present in the source document or computed record."}]}
+{"doc_id": "pt_cit_004", "verdict": "GROUNDED", "issues": []}
 {"doc_id": "en_reg_004", "verdict": "GROUNDED", "issues": []}
+{"doc_id": "en_ren_004", "verdict": "PARTIALLY_GROUNDED", "issues": [{"type": "misleading_phrasing", "detail": "The draft suggests that Northwind Analytics Ltd. may wish to proceed with renewal, which contradicts the source document stating Northwind's intention not to renew."}]}
+{"doc_id": "pt_cpa_004", "verdict": "GROUNDED", "issues": []}

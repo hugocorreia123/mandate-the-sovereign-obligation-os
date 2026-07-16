@@ -139,3 +139,42 @@ def test_the_scorecard_calls_no_model_and_needs_no_key():
     names = set(dir(sys.modules["scorecard"]))
     for forbidden in ("groq", "openai", "requests", "httpx"):
         assert forbidden not in names
+
+
+# ---------------------------- a number without its n (Phase 18b)
+def test_a_partial_run_is_rejected_not_quietly_pinned(tmp_path,
+                                                      monkeypatch):
+    """This module pinned 0.9167 from a SIX-document run killed by a
+    quota, while every full run measured 0.938 on twenty-four. The
+    file said nothing about which it was. A partial run is not a
+    smaller measurement — it is a different one."""
+    f = tmp_path / "summary.json"
+    f.write_text(json.dumps({"n": 6, "mean_groundedness": 0.9167}))
+    with pytest.raises(ValueError) as e:
+        scorecard._from_json(str(f), "mean_groundedness", min_n=24)
+    assert "n=6" in str(e.value)
+    assert "different one" in str(e.value)
+
+
+def test_a_full_run_passes_the_same_gate(tmp_path):
+    f = tmp_path / "summary.json"
+    f.write_text(json.dumps({"n": 24, "mean_groundedness": 0.938}))
+    assert scorecard._from_json(str(f), "mean_groundedness",
+                                min_n=24) == 0.938
+
+
+def test_a_file_with_no_n_at_all_is_refused(tmp_path):
+    """Silence about the sample size is not consent."""
+    f = tmp_path / "summary.json"
+    f.write_text(json.dumps({"mean_groundedness": 0.9}))
+    with pytest.raises(ValueError) as e:
+        scorecard._from_json(str(f), "mean_groundedness", min_n=24)
+    assert "records no n" in str(e.value)
+
+
+def test_the_sample_size_is_itself_published():
+    """So the score can never be quoted without it."""
+    keys = {c.key for c in claims()}
+    assert "judge_n" in keys
+    g = [c for c in claims() if c.key == "judge_groundedness"][0]
+    assert "n>=24" in g.label

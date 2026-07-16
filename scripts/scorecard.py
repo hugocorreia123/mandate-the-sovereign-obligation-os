@@ -182,11 +182,34 @@ def _crossreader_catch_rate() -> Optional[float]:
     return round(caught / corrupt, 4)
 
 
-def _from_json(path: str, *keys) -> Optional[float]:
+def _from_json(path: str, *keys, min_n: Optional[int] = None
+               ) -> Optional[float]:
+    """Read a measured value — and refuse it if the run behind it was
+    too small to be the claim.
+
+    This module pinned a groundedness of 0.9167 that came from a
+    SIX-document run killed by a quota, while every full run measured
+    0.938 on twenty-four. The file said nothing about which it was, and
+    the scorecard trusted it — the precise failure it exists to
+    prevent, committed by the thing preventing it. A number without its
+    n is not a measurement.
+    """
     p = Path(path)
     if not p.exists():
         return None
     d = json.loads(p.read_text())
+    if min_n is not None:
+        n = d.get("n")
+        if n is None:
+            raise ValueError(
+                f"{path} records no n — a number without its sample "
+                f"size cannot be a claim")
+        if n < min_n:
+            raise ValueError(
+                f"{path} was measured on n={n}, and this claim is "
+                f"defined at n>={min_n}. A partial run is not a "
+                f"smaller measurement, it is a different one. "
+                f"Re-run the evaluation.")
     for k in keys:
         if not isinstance(d, dict) or k not in d:
             return None
@@ -258,17 +281,25 @@ def claims() -> list[Claim]:
               Kind.PINNED, _crossreader_catch_rate, tolerance=0.001,
               note="the 63/63 claim",
               evidence="runs/perception_{ocr,vlm}_fax.jsonl"),
-        Claim("judge_groundedness", "judge mean groundedness",
-              Kind.PINNED,
+        Claim("judge_groundedness",
+              "judge mean groundedness (n>=24)", Kind.PINNED,
               lambda: _from_json("models/judge_summary.json",
-                                 "mean_groundedness"),
+                                 "mean_groundedness", min_n=24),
               tolerance=0.001,
-              note="measured with the FIXED evidence pack",
+              note="fixed evidence pack; REJECTED unless n>=24 — a "
+                   "quota-truncated run is a different claim",
               evidence="models/judge_summary.json"),
-        Claim("judge_kappa", "judge vs blind human labels (κ)",
+        Claim("judge_n", "documents behind the groundedness score",
+              Kind.PINNED,
+              lambda: _from_json("models/judge_summary.json", "n"),
+              tolerance=0,
+              note="published so the score above can never be quoted "
+                   "without its sample size",
+              evidence="models/judge_summary.json"),
+        Claim("judge_kappa", "judge vs blind human labels (κ, n=22)",
               Kind.PINNED,
               lambda: _from_json("models/judge_agreement.json",
-                                 "cohens_kappa"),
+                                 "cohens_kappa", min_n=20),
               tolerance=0.001,
               note="MEASURED AGAINST THE PRE-FIX HARNESS — retained "
                    "as evidence of failure, not as validation of the "

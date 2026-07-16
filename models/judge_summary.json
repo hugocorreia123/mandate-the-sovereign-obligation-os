@@ -1,11 +1,13 @@
 {
-  "n": 6,
+  "n": 24,
   "verdicts": {
-    "GROUNDED": 5,
-    "PARTIALLY_GROUNDED": 1
+    "PARTIALLY_GROUNDED": 10,
+    "GROUNDED": 14
   },
-  "mean_groundedness": 0.9167,
+  "mean_groundedness": 0.7917,
   "issues": {
+    "invented_fact": 6,
+    "missing_review_stamp": 4,
     "misleading_phrasing": 1
   }
 }
