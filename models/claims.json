@@ -7,7 +7,7 @@
   "judge_kappa": 0.6154,
   "judge_n": 24.0,
   "ocr_fax_corrupt": 0.1432,
-  "tests_total": 259.0,
+  "tests_total": 291.0,
   "tier0_macro": 0.9977,
   "tier1_macro": 0.9068,
   "tier1_macro_en": 0.8807,
