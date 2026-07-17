@@ -6,6 +6,7 @@
 </p>
 
 <p align="center">
+  <a href="https://mandate-sovereign-obligation-os.streamlit.app/"><img src="https://img.shields.io/badge/▶_LIVE_DEMO-try_it-FF4B4B?style=for-the-badge"/></a>
   <img src="https://img.shields.io/badge/phases-20%2F20_shipped-2EA44F?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/tests-291%2F291_green-2EA44F?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/deadline_engine-34_verified_cases-1F6FEB?style=for-the-badge"/>
@@ -17,6 +18,8 @@
 </p>
 
 <p align="center">
+  <b><a href="https://mandate-sovereign-obligation-os.streamlit.app/">▶ Try it live</a></b> — process a court summons, watch the deadline get computed<br>
+  by code that shows its work, then <b>pull the cable</b> and watch it survive.<br>
   <b><a href="FINDINGS.md">📄 Read the findings paper</a></b> — what twenty phases actually taught,<br>
   including the ten mistakes and what caught each one.
 </p>
@@ -250,6 +253,17 @@ Once fed properly, the judge did earn its keep: it found a **10× money error** 
 
 ## Run it
 
+**Nothing to install:** [mandate-sovereign-obligation-os.streamlit.app](https://mandate-sovereign-obligation-os.streamlit.app/)
+
+**The sovereign appliance** — and then ask it to phone home from inside:
+
+```bash
+docker compose up -d --build
+docker compose exec mandate python scripts/verify_sovereignty.py
+```
+
+**From source:**
+
 ```bash
 git clone https://github.com/hugocorreia123/mandate-the-sovereign-obligation-os
 cd mandate-the-sovereign-obligation-os && uv sync
@@ -294,7 +308,7 @@ Mandate applies a **detect → investigate → human-decide** pattern to a fourt
 | [**Tracer**](https://github.com/hugocorreia123/tracer-aml-graph-intelligence) | Financial-crime networks | GraphSAGE +40% PR-AUC over tabular; SAR agent, judge **κ = 0.942** · *live demo* |
 | [**Turbine**](https://github.com/hugocorreia123/turbine-predictive-maintenance) | Predictive maintenance | Temporal CNN wins the hard C-MAPSS benchmark; calibrated RUL; agentic copilot · *live demo* |
 | [**Sentinel**](https://github.com/hugocorreia123/sentinel-fraud-mlops) | Transaction fraud (MLOps) | Champion/challenger, p99 ~96 ms, shadow A/B, full observability · *HF Spaces* |
-| [**Mandate**](https://github.com/hugocorreia123/mandate-the-sovereign-obligation-os) | **Legal obligations (sovereign)** | Deterministic engine · measured degradation ladder · tamper-evident ledger |
+| [**Mandate**](https://github.com/hugocorreia123/mandate-the-sovereign-obligation-os) | **Legal obligations (sovereign)** | Deterministic engine (3 jurisdictions, 54 verified cases) · measured degradation ladder · tamper-evident ledger · [*live demo*](https://mandate-sovereign-obligation-os.streamlit.app/) |
 
 The same throughout: **deterministic where it counts, honest baselines, measured findings including the negative ones, and a human in the loop by measured necessity.**
 
