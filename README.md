@@ -6,14 +6,19 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/phases-18%2F20_shipped-F9A826?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/tests-259%2F259_green-2EA44F?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/phases-20%2F20_shipped-2EA44F?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/tests-291%2F291_green-2EA44F?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/deadline_engine-34_verified_cases-1F6FEB?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/license-Apache--2.0-8957E5?style=for-the-badge"/>
 </p>
 
 <p align="center">
   <code>deterministic where it counts</code> · <code>sovereign by default</code> · <code>measured, not asserted</code>
+</p>
+
+<p align="center">
+  <b><a href="FINDINGS.md">📄 Read the findings paper</a></b> — what twenty phases actually taught,<br>
+  including the ten mistakes and what caught each one.
 </p>
 
 ---
@@ -125,10 +130,10 @@ A committed plan, not a wish-list. Every phase ships a capability that can be de
 - [x] **17 · Documents disagree with each other** — and that is the only place the project's worst failure is visible. The OCR corruptions of Phase 10 (`185435.45 → 165435.45`, `121577.23 → 121.57`) were undetectable *inside* a document; across two they are **critical findings, diagnosed by the ratio** (two orders of magnitude = a misread decimal, not a dispute). Deterministic set logic, no model, no network. **Never decides who is right** — shows both and stops.
 - [x] **18 · The README's numbers are outputs** — regenerated from committed evidence on every commit; CI fails if one drifts. See results row 13.
 
-### Capstone
+### Capstone — shipped
 
-- [ ] **19 · End-to-end hardening pass** — the whole system under adversarial input, load, and simulated outage.
-- [ ] **20 · Findings paper + tagged release** — the definitive writeup and a versioned release.
+- [x] **19 · Hardening** — the whole chain under 16 hostile inputs, at volume, with every cable pulled. Found three real bugs *before a test was written*: an empty document crashed the extractor; `prazo de 1000000000 dias` cost **six minutes of CPU** — a denial of service by typing a big number, and **the counterparty writes the document**; `verify_chain()` raised on an empty ledger. Asserts four invariants: nothing crashes, nothing is silently lost, the chain always verifies, no draft passes the gate unchecked.
+- [x] **20 · [Findings paper](FINDINGS.md) + tagged release** — the definitive account, including the section most projects omit: **every mistake, and the instrument that caught it.**
 
 ---
 
@@ -292,6 +297,16 @@ Mandate applies a **detect → investigate → human-decide** pattern to a fourt
 | [**Mandate**](https://github.com/hugocorreia123/mandate-the-sovereign-obligation-os) | **Legal obligations (sovereign)** | Deterministic engine · measured degradation ladder · tamper-evident ledger |
 
 The same throughout: **deterministic where it counts, honest baselines, measured findings including the negative ones, and a human in the loop by measured necessity.**
+
+---
+
+## What twenty phases taught
+
+Every measurement in this project was wrong the first time. Not some — every one. What caught each of them was never care and never review: **it was always a second instrument disagreeing with the first.** The deterministic checks caught the judge rating four empty strings as perfect; the judge, once fixed, caught a 10× money error the checks had passed; the third jurisdiction caught an assumption two jurisdictions had hidden; the hardening pass caught a ledger that could not answer a question about itself; and the scorecard's first catch was the scorecard.
+
+**Measurement is a system, not a step.** A single evaluation, however careful, is a story you tell yourself. Two that contradict each other are the beginning of knowing something. That is why this repository is built out of components that check each other — and why every number in it is regenerated from evidence on every commit, and CI fails when one stops being true.
+
+*The full account, with all ten mistakes and what caught each: **[FINDINGS.md](FINDINGS.md)**.*
 
 ---
 
