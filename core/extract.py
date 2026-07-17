@@ -215,7 +215,11 @@ def extract_tier2(text: str) -> ExtractionResult:
                 setattr(r, field, m.group(1).strip())
     # authority/court header as creditor when still unknown
     if r.creditor is None:
-        first = text.splitlines()[0].strip()
+        # An empty document crashed this line with IndexError — the
+        # most trivial input in existence, and the pipeline died on it
+        # rather than abstaining. Found by the Phase 19 hardening pass.
+        lines = text.splitlines()
+        first = lines[0].strip() if lines else ""
         if first and "NOTICE" not in first.upper():
             r.creditor = first
 

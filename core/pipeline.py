@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Callable, Optional
 
 from calibration import Calibrator, agreement_signal
-from engine import compute_deadline
+from engine import ImplausiblePeriod, compute_deadline
 from redaction import detect_injection
 from extract import ExtractionResult, TIERS
 from graph import (Claim, ClaimType, Deadline, Obligation,
@@ -225,9 +225,16 @@ def process_document(text: str, doc_id: str, graph: ObligationGraph,
 
     # ---- compute: THE ENGINE, not the LLM ----
     pack = PACKS[ex.jurisdiction]
-    r = compute_deadline(pack, ex.regime_id,
-                         date.fromisoformat(ex.event_date),
-                         ex.deadline_amount, ex.deadline_unit)
+    try:
+        r = compute_deadline(pack, ex.regime_id,
+                             date.fromisoformat(ex.event_date),
+                             ex.deadline_amount, ex.deadline_unit)
+    except ImplausiblePeriod as e:
+        # Not a crash and not a guess: the document said something no
+        # deadline could mean, so a human reads it.
+        trace.append(f"[abstain] {e} -> human queue")
+        return PipelineResult(None, "needs_human_extraction", None,
+                              None, trace)
     graph.attach_deadline(obligation.id, Deadline(
         due_date=r.due_date, regime=r.regime,
         jurisdiction=ex.jurisdiction, legal_refs=r.legal_refs,

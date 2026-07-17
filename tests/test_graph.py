@@ -163,3 +163,14 @@ def test_the_chain_still_detects_tampering_with_readable_text(g):
     lines[-1] = json.dumps(ev, default=str, ensure_ascii=False)
     g.log_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     assert g.verify_chain() is False
+
+
+def test_an_empty_ledger_verifies_rather_than_raising(tmp_path):
+    """Nothing has been tampered with because nothing has happened.
+    This raised FileNotFoundError, so a fresh system could not answer
+    "is my chain intact?" — and callers worked around it with
+    `not path.exists() or verify_chain()`, which is a workaround for a
+    broken method. Found by the Phase 19 hardening pass."""
+    g = ObligationGraph(tmp_path / "never-written.jsonl")
+    assert g.verify_chain() is True
+    assert not (tmp_path / "never-written.jsonl").exists()

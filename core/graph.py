@@ -193,7 +193,19 @@ class ObligationGraph:
         return event
 
     def verify_chain(self) -> bool:
-        """Recompute every hash; any edit/deletion breaks the chain."""
+        """Recompute every hash; any edit/deletion breaks the chain.
+
+        A ledger with no events verifies: nothing has been tampered
+        with because nothing has happened. This used to raise
+        FileNotFoundError — a fresh system could not answer "is my
+        chain intact?" — and callers papered over it with
+        `not path.exists() or verify_chain()`, which is a workaround
+        for a broken method rather than a fix. Found by the Phase 19
+        hardening pass, when the first hostile document abstained and
+        wrote no events at all.
+        """
+        if not self.log_path.exists():
+            return True
         prev = "GENESIS"
         for line in self.log_path.read_text(
                 encoding="utf-8").splitlines():

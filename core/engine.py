@@ -30,6 +30,20 @@ from dateutil.relativedelta import relativedelta
 
 Unit = Literal["days", "weeks", "months", "years"]
 
+# A legal period is not a million days. Beyond a decade it is a
+# misread number or an attack — and the engine counts day by day, so a
+# counterparty (who WRITES the document we ingest) could spend six
+# minutes of our CPU by typing a big number into a citação. The
+# threat model said the document is attacker-authored; this is what
+# that means arithmetically.
+MAX_PERIOD_DAYS = 3_650          # ten years
+MAX_PERIOD = {"days": MAX_PERIOD_DAYS, "weeks": MAX_PERIOD_DAYS // 7,
+              "months": 120, "years": 10}
+
+
+class ImplausiblePeriod(ValueError):
+    """A stated period no legal deadline could plausibly have."""
+
 
 @dataclass
 class Rule:
@@ -107,6 +121,19 @@ def compute_deadline(pack: JurisdictionPack, regime_id: str,
     rule = pack.rules[regime_id]
     steps: list[str] = []
     refs = [rule.legal_basis]
+
+    if amount < 0:
+        raise ImplausiblePeriod(
+            f"a period of {amount} {unit} runs backwards — the "
+            f"document was misread")
+    cap = MAX_PERIOD.get(unit, MAX_PERIOD_DAYS)
+    if amount > cap:
+        raise ImplausiblePeriod(
+            f"a period of {amount:,} {unit} exceeds the plausible "
+            f"maximum of {cap:,}. No deadline in these jurisdictions "
+            f"is a decade long: this is a misread number or a hostile "
+            f"document, and computing it would spend minutes of CPU "
+            f"on an attacker's arithmetic. Routed to a human.")
 
     if unit == "weeks":
         steps.append(f"Period of {amount} week(s) converts to "

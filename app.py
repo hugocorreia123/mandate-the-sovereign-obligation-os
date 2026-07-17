@@ -209,8 +209,7 @@ m3.metric("Ledger events",
           len(Path(LOG).read_text().splitlines())
           if Path(LOG).exists() else 0)
 m4.metric("Records intact",
-          "✅ Yes" if not Path(LOG).exists() or g.verify_chain()
-          else "❌ Tampered")
+          "✅ Yes" if g.verify_chain() else "❌ Tampered")
 
 tab_do, tab_scan, tab_ledger, tab_how, tab_help = st.tabs(
     ["📥 Try it", "🖨️ Scanned documents", "📋 Tracked obligations",
