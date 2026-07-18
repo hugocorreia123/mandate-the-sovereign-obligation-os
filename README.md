@@ -308,7 +308,6 @@ Mandate applies a **detect → investigate → human-decide** pattern to a fourt
 | [**Tracer**](https://github.com/hugocorreia123/tracer-aml-graph-intelligence) | Financial-crime networks | GraphSAGE +40% PR-AUC over tabular; SAR agent, judge **κ = 0.942** · *live demo* |
 | [**Turbine**](https://github.com/hugocorreia123/turbine-predictive-maintenance) | Predictive maintenance | Temporal CNN wins the hard C-MAPSS benchmark; calibrated RUL; agentic copilot · *live demo* |
 | [**Sentinel**](https://github.com/hugocorreia123/sentinel-fraud-mlops) | Transaction fraud (MLOps) | Champion/challenger, p99 ~96 ms, shadow A/B, full observability · *HF Spaces* |
-| [**Mandate**](https://github.com/hugocorreia123/mandate-the-sovereign-obligation-os) | **Legal obligations (sovereign)** | Deterministic engine (3 jurisdictions, 54 verified cases) · measured degradation ladder · tamper-evident ledger · [*live demo*](https://mandate-sovereign-obligation-os.streamlit.app/) |
 
 The same throughout: **deterministic where it counts, honest baselines, measured findings including the negative ones, and a human in the loop by measured necessity.**
 
