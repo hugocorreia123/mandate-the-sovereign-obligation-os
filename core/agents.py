@@ -83,7 +83,7 @@ SOURCE DOCUMENT:
 
 
 def groq_drafter(text, ex, deadline_result,
-                 model="qwen/qwen3-32b") -> str:
+                 model="openai/gpt-oss-120b") -> str:
     lang_name = {"pt": "Portuguese (pt-PT)",
                  "en": "English"}.get(ex.language, "English")
     # never render "EUR None" — the model reads it as "nothing is due"
@@ -153,7 +153,7 @@ DRAFT:
 
 
 def groq_red_team(draft, ex, deadline_result,
-                  model="qwen/qwen3-32b") -> dict:
+                  model="openai/gpt-oss-120b") -> dict:
     prompt = CRITIC_PROMPT.format(
         due=deadline_result.due_date.isoformat(),
         amount=ex.deadline_amount, unit=ex.deadline_unit,

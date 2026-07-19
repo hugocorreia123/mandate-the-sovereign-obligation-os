@@ -290,7 +290,7 @@ def _parse_llm_json(raw: str) -> ExtractionResult:
 
 
 def extract_tier0(text: str,
-                  model: str = "qwen/qwen3-32b") -> ExtractionResult:
+                  model: str = "openai/gpt-oss-120b") -> ExtractionResult:
     from groq import Groq
     client = Groq(api_key=os.environ["GROQ_API_KEY"])
     resp = client.chat.completions.create(
@@ -318,7 +318,7 @@ def extract_tier1(text: str, model: str = "qwen2.5:7b-instruct",
 
 
 def extract_tier0_redacted(text: str,
-                           model: str = "qwen/qwen3-32b"
+                           model: str = "openai/gpt-oss-120b"
                            ) -> ExtractionResult:
     """Tier-0 with no PII egress: pseudonymize locally, send the
     placeholder document, restore identities from the local mapping.
