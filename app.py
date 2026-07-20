@@ -328,7 +328,7 @@ with tab_do:
                      "compile": "🗂️ Logged the obligation",
                      "compute": "📅 Computed the deadline (by code)",
                      "act": "✍️ Drafted a response",
-                     "gate": "🛡️ Hostile AI reviewed the draft"}
+                     "gate": "⚔️ Hostile AI reviewed the draft"}
             st.markdown("#### What happened")
             for line in res.trace:
                 tag = line.split("]")[0].strip("[")
@@ -361,7 +361,7 @@ with tab_do:
             if res.red_team_verdict:
                 checks = res.red_team_verdict["checks"]
                 npass = sum(c["pass"] for c in checks)
-                st.markdown(f"#### 🛡️ Hostile review — "
+                st.markdown(f"#### ⚔️ Hostile review — "
                             f"{npass}/{len(checks)} checks passed")
                 names = {
                     "due_date_verbatim": "Draft uses the exact "
