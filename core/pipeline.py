@@ -94,9 +94,11 @@ def _amount_present(draft: str, amount: float) -> bool:
     separators, decimal commas, spaces, currency symbols. The old exact
     string match failed constantly once the drafting model changed its
     number formatting; the amount being present is what matters."""
-    int_digits = str(int(round(amount)))
+    int_digits = str(int(amount))
+    cent_digits = re.sub(r"\D", "", f"{amount:.2f}")
     for tok in re.findall(r"\d[\d.,\s\u00a0]*\d|\d", draft):
-        if int_digits in re.sub(r"\D", "", tok):
+        td = re.sub(r"\D", "", tok)
+        if int_digits in td or cent_digits in td:
             return True
     return False
 
