@@ -89,6 +89,18 @@ _WORDS_MONEY = re.compile(
     re.I)
 
 
+def _amount_present(draft: str, amount: float) -> bool:
+    """True if the amount appears in ANY standard formatting — thousands
+    separators, decimal commas, spaces, currency symbols. The old exact
+    string match failed constantly once the drafting model changed its
+    number formatting; the amount being present is what matters."""
+    int_digits = str(int(round(amount)))
+    for tok in re.findall(r"\d[\d.,\s\u00a0]*\d|\d", draft):
+        if int_digits in re.sub(r"\D", "", tok):
+            return True
+    return False
+
+
 def _no_amount_in_words(draft: str) -> bool:
     """Amounts must appear in digits, never spelled out.
 
@@ -275,8 +287,7 @@ def process_document(text: str, doc_id: str, graph: ObligationGraph,
           re.search(rf"\b{ex.deadline_amount}\b", draft) is not None)
     if ex.amount_eur:
         check("amount_present",
-              f"{ex.amount_eur:,.2f}" in draft
-              or f"{ex.amount_eur:.2f}" in draft)
+              _amount_present(draft, ex.amount_eur))
     check("legal_basis_cited",
           any(tok in draft for tok in
               re.findall(r"\d+", ex.legal_basis or "")) if

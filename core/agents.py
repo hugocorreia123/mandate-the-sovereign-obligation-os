@@ -92,7 +92,8 @@ def groq_drafter(text, ex, deadline_result,
     prompt = DRAFT_PROMPT.format(
         lang_name=lang_name,
         amount_line=amount_line,
-        amount_eur_digits=(ex.amount_eur if ex.amount_eur is not None
+        amount_eur_digits=(f"{ex.amount_eur:,.2f}"
+                           if ex.amount_eur is not None
                            else "(no amount)"),
         due=deadline_result.due_date.isoformat(),
         event=ex.event_date,
